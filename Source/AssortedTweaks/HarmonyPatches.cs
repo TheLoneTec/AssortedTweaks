@@ -12,6 +12,9 @@ using System.Diagnostics;
 using Verse.AI;
 using System.Globalization;
 using System.Net.NetworkInformation;
+using static HarmonyLib.Code;
+using System.Runtime.Remoting.Messaging;
+using Random = UnityEngine.Random;
 
 namespace AssortedTweaks
 {
@@ -54,10 +57,10 @@ namespace AssortedTweaks
                     destIngredients.Remove(item);
                 }
             }
-            CompIngredients tmp = new CompIngredients();
-            tmp.ingredients = srcIngredients;
-            CorrectIngredients.correctIngredients(ref tmp);
-            srcIngredients = tmp.ingredients;
+            //CompIngredients tmp = new CompIngredients();
+            //tmp.ingredients = srcIngredients;
+            //CorrectIngredients.correctIngredients(ref tmp);
+            //srcIngredients = tmp.ingredients;
         }
     }
 
@@ -163,6 +166,7 @@ namespace AssortedTweaks
         public static bool isCannible = false;
         public static string thingName = "";
         public static int recurring = 0;
+        public static bool endOfSearch = false;
 
         public static void Postfix(ref Thing __result, Thing newThing, IntVec3 loc, Map map, Rot4 rot, WipeMode wipeMode, bool respawningAfterLoad)
         {
@@ -249,7 +253,7 @@ namespace AssortedTweaks
 
                 if (!comp.ingredients.NullOrEmpty())
                 {
-                    Log.Message("Has Ingredient Comp: " + comp.parent.def.defName + " and isnt a meal");
+                    //Log.Message("Has Ingredient Comp: " + comp.parent.def.defName + " and isnt a meal");
                     foreach (var item in comp.ingredients.Where(i => i.race != null))
                     {
                         ThingDef newIngredient = null;
@@ -267,7 +271,7 @@ namespace AssortedTweaks
                 else
                 {
                     //List<ThingDef> possibleIngredients = new List<ThingDef>();
-                    Log.Message("Beginning Generation of " + comp.parent.def.defName + ". Held By " + (comp.parent.ParentHolder.ParentHolder is Pawn && (comp.parent.ParentHolder.ParentHolder as Pawn).Name != null ? (comp.parent.ParentHolder.ParentHolder as Pawn).Name.ToStringFull : "None"));
+                    //Log.Message("Beginning Generation of " + comp.parent.def.defName + ". Held By " + (comp.parent.ParentHolder.ParentHolder is Pawn && (comp.parent.ParentHolder.ParentHolder as Pawn).Name != null ? (comp.parent.ParentHolder.ParentHolder as Pawn).Name.ToStringFull : "None"));
                     GenerateIngredients(comp.parent.def,ref newIngredients);
                 }
 
@@ -425,8 +429,8 @@ namespace AssortedTweaks
                 newIngredients.Add(food);
                 return;
             }*/
-            
-            Log.Message("Checking " + food.defName);
+
+            //Log.Message("Checking " + food.defName);
             CompProperties_Rottable rot = food.GetCompProperties<CompProperties_Rottable>();
             if (rot != null && rot.daysToRotStart == 0)
                 return;
@@ -437,36 +441,44 @@ namespace AssortedTweaks
                 //if (item.IsIngestible && item.ingestible.sourceDef != null)
                 //    race = item.ingestible.sourceDef.defName;
                 //Log.Message("Ingredients: " + item.defName + ". item Race is " + race);
-                if (item.IsIngestible && item.ingestible.sourceDef != null)
+                if (!endOfSearch)
                 {
-                    ThingDef possibleMeat = ConvertMeatToRandomRace(item);
-                    if (!newIngredients.Contains(possibleMeat))
+                    if (item.IsIngestible && item.ingestible.sourceDef != null)
                     {
-                        Log.Message("Adding Meat Source: " + possibleMeat.defName);
-                        newIngredients.Add(possibleMeat);
-                    }
-                }
-                else if (item.IsIngestible && item.ingestible.IsMeal)
-                {
-                    Log.Message("Is Meal: " + item.defName);
-                    foreach (var innerItem in GetPossibleIngredients(item))
-                    {
-                        GenerateIngredients(innerItem, ref newIngredients);
-                    }
-                }
-                else if(item.IsIngestible)
-                {
-                    foreach (var innerItem in GetPossibleIngredients(item))
-                    {
-                        if (!newIngredients.Contains(innerItem))
+                        ThingDef possibleMeat = ConvertMeatToRandomRace(item);
+                        if (!newIngredients.Contains(possibleMeat))
                         {
-                            Log.Message("Adding Ingestible: " + item.defName);
-                            newIngredients.Add(innerItem);
+                            //Log.Message("Adding Meat Source: " + possibleMeat.defName);
+                            newIngredients.Add(possibleMeat);
                         }
-                    }      
+                    }
+                    else if (item.IsIngestible && item.ingestible.IsMeal)
+                    {
+                        //Log.Message("Is Meal: " + item.defName);
+                        foreach (var innerItem in GetPossibleIngredients(item))
+                        {
+                            GenerateIngredients(innerItem, ref newIngredients);
+                        }
+                    }
+                    else if (item.IsIngestible)
+                    {
+                        foreach (var innerItem in GetPossibleIngredients(item))
+                        {
+                            if (!newIngredients.Contains(innerItem))
+                            {
+                                //Log.Message("Adding Ingestible: " + item.defName);
+                                newIngredients.Add(innerItem);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    newIngredients.Add(item);
+                    endOfSearch = false;
                 }
             }
-            Log.Message("Exited GetPossibleIngredients Loop");
+            //Log.Message("Exited GetPossibleIngredients Loop");
         }
 
         public static ThingDef ConvertMeatToRandomRace(ThingDef meat)
@@ -478,7 +490,7 @@ namespace AssortedTweaks
                     return meat;
 
                 IEnumerable<ThingDef> pawn = null;
-                Log.Message("About to check if not corpse");
+                //Log.Message("About to check if not corpse");
                 if (!meat.IsCorpse)
                 {
                     pawn = DefDatabase<ThingDef>.AllDefs.Where(i => i.race != null && i.race.meatDef == meat
@@ -494,23 +506,23 @@ namespace AssortedTweaks
                     {
                         if (meat.defName.Contains("Mech") || meat.race != null && meat.race.FleshType != FleshTypeDefOf.Mechanoid)
                             meat = DefDatabase<ThingDef>.AllDefs.Where(d => d.defName == "Elephant").First().race.corpseDef;
-                        Log.Message("Is Corpse");
+                        //Log.Message("Is Corpse");
                         randomPawn = meat.ingestible.sourceDef;
                     }
                     else
                     {
                         randomPawn = pawn.RandomElement();
                     }
-                    Log.Message("Selection Count: " + (pawn != null ? pawn.Count().ToString() : "0"));
+                    //Log.Message("Selection Count: " + (pawn != null ? pawn.Count().ToString() : "0"));
                     ThingDef newIngredient = null;
-                    Log.Message("randomPawn is: " + randomPawn.defName);
+                    //Log.Message("randomPawn is: " + randomPawn.defName);
                     if (randomPawn == null)
                         randomPawn = DefDatabase<ThingDef>.AllDefs.Where(i => i.race != null && !i.race.IsMechanoid && !i.defName.ToLower().Contains("droid") && !i.defName.ToLower().Contains("skynet") && !i.defName.ToLower().Contains("void") &&
                     (!i.statBases.Where(s => s.stat.defName == "MeatAmount").EnumerableNullOrEmpty() ? i.statBases.Find(s => s.stat.defName == "MeatAmount").value != 0 : true)).RandomElement();
                     newIngredient = GetInfo(randomPawn);
-                    Log.Message("Info Aquired");
+                    //Log.Message("Info Aquired");
                     SetAsMeat(ref newIngredient, randomPawn, meat);
-                    Log.Message("Converted: " + meat.defName + " to " + newIngredient.defName);
+                    //Log.Message("Converted: " + meat.defName + " to " + newIngredient.defName);
                     return newIngredient;
                 }
             }
@@ -520,12 +532,12 @@ namespace AssortedTweaks
         public static List<ThingDef> GetPossibleIngredients(ThingDef food)
         {
             List<ThingDef> possibleIngredients = new List<ThingDef>();
-            List<RecipeDef> recipes = DefDatabase<RecipeDef>.AllDefs.Where(recipe1 => recipe1.products.Any(i => i.thingDef.IsIngestible)).ToList();
+            List<RecipeDef> recipes = DefDatabase<RecipeDef>.AllDefs.Where(recipe1 => recipe1.products.Any(i => i.thingDef.IsIngestible) && !recipe1.defName.Contains("Glycerol")).ToList();
 
-            Log.Message("Looking for Recipes for " + food.defName);
+            //Log.Message("Looking for Recipes for " + food.defName);
             RecipeDef matchingRecipe = recipes.Where(recipe2 => !recipe2.products.Where(p => p.thingDef.defName == food.defName).EnumerableNullOrEmpty()).RandomElementWithFallback();
 
-            Log.Message("Get Possible Ingredients... ");
+            //Log.Message("Get Possible Ingredients... ");
             if (food.IsIngestible && food.ingestible.sourceDef != null)
             {
                 possibleIngredients.Add(food);
@@ -534,7 +546,7 @@ namespace AssortedTweaks
 
             if (matchingRecipe == null)
             {
-                Log.Warning("Couldnt find recipe for " + food.defName);
+                //Log.Warning("Couldnt find recipe for " + food.defName);
 
                 /*
                 else if (food.IsIngestible && food.ingestible.sourceDef != null)
@@ -552,16 +564,23 @@ namespace AssortedTweaks
                 
                 if (food.IsIngestible && food.ingestible.IsMeal && food.defName.Contains("NutrientPaste")) 
                 {
-                    IEnumerable<ThingDef> randomIngredient = DefDatabase<ThingDef>.AllDefs.Where(d => d.IsWithinCategory(ThingCategoryDefOf.PlantFoodRaw) || d.IsWithinCategory(ThingCategoryDefOf.MeatRaw));
+                    IEnumerable<ThingDef> randomIngredient = DefDatabase<ThingDef>.AllDefs.Where(d => (d.IsWithinCategory(ThingCategoryDefOf.PlantFoodRaw) || d.IsWithinCategory(ThingCategoryDefOf.MeatRaw))
+                        && !d.defName.ToLower().Contains("skynet") && !d.defName.ToLower().Contains("droid") && !d.defName.ToLower().Contains("egg")
+                        && !d.defName.ToLower().Contains("human") && !d.defName.ToLower().Contains("robot") && !d.defName.ToLower().Contains("soylentgreen")
+                        && !d.defName.ToLower().Contains("salt") && !d.defName.Contains("Canned") && (d.race == null || !d.race.IsMechanoid));
                     if (!randomIngredient.EnumerableNullOrEmpty())
                     {
+                        //foreach (var item in randomIngredient)
+                        //{
+                        //    Log.Message("Possible ingredient: " + item.defName);
+                        //}
                         ThingDef ing = randomIngredient.RandomElement();
                         if (ing.IsIngestible && ing.ingestible.sourceDef != null) 
                         {
                             ThingDef possibleMeat = ConvertMeatToRandomRace(ing);
                             if (!possibleIngredients.Contains(possibleMeat))
                             {
-                                Log.Message("Adding Meat Source: " + possibleMeat.defName);
+                                //Log.Message("Adding Meat Source: " + possibleMeat.defName);
                                 possibleIngredients.Add(possibleMeat);
                             }
                         }
@@ -569,104 +588,135 @@ namespace AssortedTweaks
                         {
                             possibleIngredients.Add(ing);
                         }
-
+                        //endOfSearch = true;
+                        return possibleIngredients;
                     }
                 }
 
                 if (food.thingCategories != null && food.thingCategories.Find(c => c.defName == "MeatSubRaw" || c.defName == "CookingSupplies"
                 || c.defName == "AnimalProductRaw" || c.defName == "VegetableOrFruit" || c.defName == "BasicPlantFoodRaw"
-                || c.defName == "BasicPlantFoodRaw" || c.defName == "LuxuryStuffs") != null
+                || c.defName == "ExtraPlantFoodRaw" || c.defName == "LuxuryStuffs") != null
                     && food.thingCategories.Find(cat => cat.defName == "Preserves") == null && !food.ingestible.IsMeal)
                 {
-                    possibleIngredients.Add(food);
-                    return possibleIngredients;
+                    if (food.ingestible.JoyKind == null || food.ingestible.JoyKind.defName != "Chemical")
+                    {
+                        //Log.Message("Adding ingredient: " + food.defName);
+                        possibleIngredients.Add(food);
+                        endOfSearch = true;
+                        return possibleIngredients;
+                    }
                 }
-                /*
                 else
                 {
                     if (food.IsWithinCategory(ThingCategoryDefOf.PlantFoodRaw) || food.IsWithinCategory(ThingCategoryDefOf.MeatRaw)
                         && food.IsIngestible && food.ingestible.foodType != FoodTypeFlags.Meal && !food.HasComp(typeof(CompProperties_Ingredients)))
                     {
                         
-                        Log.Message("Adding Random Ingredient");
-                        if (food.IsIngestible && food.ingestible.sourceDef != null)
+                        //Log.Message("Adding Random Ingredient");
+                        if (food.ingestible.sourceDef != null)
                         {
                             ThingDef temp = ConvertMeatToRandomRace(food);
-                            Log.Message("Convert to Race");
+                            //Log.Message("Convert to Race");
                             if (temp != null)
                             {
                                 possibleIngredients.Add(temp);
                             }
                             else
                             {
+                                //Log.Message("Add Other");
                                 possibleIngredients.Add(food);
                             }
 
                         }
                         else
                         {
-                            Log.Message("Add Vegetable/Fruit");
+                            //Log.Message("Add Vegetable/Fruit");
                             possibleIngredients.Add(food);
                         }
                     }
-                }*/
-                if (possibleIngredients.NullOrEmpty() && food.IsRawFood() && food.GetCompProperties<CompProperties_Ingredients>() == null)
+                }
+                if (possibleIngredients.NullOrEmpty() && food.IsIngestible && food.GetCompProperties<CompProperties_Ingredients>() == null)
+                {
                     possibleIngredients.Add(food);
+                    endOfSearch = true;
+                }
+
                 return possibleIngredients;
             }
-            Log.Message("Total Ingredients to find for recipe: " + matchingRecipe.ingredients.Count);
+            //Log.Message("Total Ingredients to find for recipe: " + matchingRecipe.ingredients.Count);
             foreach (var item in matchingRecipe.ingredients)
             {
                 //item.filter.DisplayRootCategory.ChildCategoryNodes.RandomElement().catDef
-                Log.Message("checking ThingCount: " + item.Summary);
+                //Log.Message("checking ThingCount: " + item.Summary);
+                if (matchingRecipe.ingredients.Count == 1 && item.filter.AllowedThingDefs.Any(f => f.defName.ToLower().Contains("flour") || f.defName.ToLower().Contains("milk")))
+                {
+                    possibleIngredients.Add(food);
+                    endOfSearch = true;
+                    return possibleIngredients;
+                }
+
+                foreach (var item2 in item.filter.AllowedThingDefs)
+                {
+                    //Log.Message("Allowed: " + item2.defName);
+                }
                 if (!item.filter.AllowedThingDefs.EnumerableNullOrEmpty())
                 {
-                    ThingDef randomIngredient = item.filter.AllowedThingDefs.Where(i => i.IsRawFood()).RandomElementWithFallback();
-                    Log.Message("randomIngredient Assigned: " + (randomIngredient != null ? randomIngredient.defName : "Is Null"));
-                    if (food.label.ToLower().Contains("prime meat"))
+                    ThingDef randomIngredient = null;
+                    if (!item.filter.AllowedThingDefs.Where(i => i.label.ToLower().Contains("prime meat")).EnumerableNullOrEmpty())
                     {
-                        Log.Message("Prime");
+                        //Log.Message("Prime");
                         // Need to seperate code to grab race meat.
-                        randomIngredient = item.filter.AllowedThingDefs.Where(d => d.label.ToLower().Contains("prime meat")).RandomElementWithFallback();
+                        float chance = 0.4f;
+                        if (Random.Range(0f, 1f) > chance)
+                        {
+                            randomIngredient = ThingDefOf.Muffalo.race.meatDef;
+                        }
+                        else
+                        {
+                            randomIngredient = item.filter.AllowedThingDefs.Where(meat => !meat.defName.ToLower().Contains("canned")).RandomElementWithFallback();
+                        }
                     }
                     else if (item.filter.AllowedThingDefs.Where(d => !d.defName.ToLower().Contains("egg")).EnumerableNullOrEmpty())
                     {
-                        Log.Message("Egg");
-                        randomIngredient = item.filter.AllowedThingDefs.Where(d => !d.defName.ToLower().Contains("skynet")
-                        && !d.defName.ToLower().Contains("droid") && !d.defName.ToLower().Contains("human")
+                        //Log.Message("Egg");
+                        randomIngredient = item.filter.AllowedThingDefs.Where(d => d.IsIngestible && !d.defName.ToLower().Contains("skynet")
+                        && !d.defName.ToLower().Contains("droid") && !d.defName.ToLower().Contains("human") && !d.defName.ToLower().Contains("robot")
                         && !d.defName.ToLower().Contains("soylentgreen") && !d.defName.ToLower().Contains("salt")).RandomElementWithFallback();
                     }
                     else if (isCannible && item.filter.AllowedThingDefs.Contains(ThingDefOf.Meat_Human))
                     {
-                        Log.Message("Human");
-                        randomIngredient = item.filter.AllowedThingDefs.Where(d => d.defName.ToLower().Contains("human")
+                        //Log.Message("Human");
+                        randomIngredient = item.filter.AllowedThingDefs.Where(d => d.IsIngestible && d.defName.ToLower().Contains("human")
                         || d.defName.ToLower().Contains("soylentgreen")).RandomElementWithFallback();
                     }
                     else
                     {
-                        Log.Message("Other");
-                        randomIngredient = item.filter.AllowedThingDefs.Where(d => !d.defName.ToLower().Contains("skynet") && !d.defName.ToLower().Contains("droid")
-                        && !d.defName.ToLower().Contains("egg") && !d.defName.ToLower().Contains("human")
-                        && !d.defName.ToLower().Contains("soylentgreen") && !d.defName.ToLower().Contains("salt")).RandomElementWithFallback();
+                        //Log.Message("Other");
+                        randomIngredient = item.filter.AllowedThingDefs.Where(d => d.IsIngestible && !d.defName.ToLower().Contains("skynet") && !d.defName.ToLower().Contains("droid")
+                        && !d.defName.ToLower().Contains("egg") && !d.defName.ToLower().Contains("human") && !d.defName.ToLower().Contains("robot")
+                        && !d.defName.ToLower().Contains("soylentgreen") && !d.defName.ToLower().Contains("salt") && (d.race == null || !d.race.IsMechanoid)).RandomElementWithFallback();
                     }
 
                     if (randomIngredient != null)
                     {
-                        Log.Message("Ingredient Found");
-                        Log.Message("Ingredient is: " + randomIngredient.defName);
+                        //Log.Message("Ingredient Found");
+                        //Log.Message("Ingredient is: " + randomIngredient.defName + " Is Corpse: " + randomIngredient.IsCorpse);
                         if (randomIngredient.IsIngestible && randomIngredient.ingestible.sourceDef != null)
                         {
-
-                            possibleIngredients.Add(ConvertMeatToRandomRace(randomIngredient));
+                                possibleIngredients.Add(ConvertMeatToRandomRace(randomIngredient));
                         }
                         else
                         {
-                            possibleIngredients.Add(randomIngredient);
+                            if (randomIngredient.IsIngestible)
+                                possibleIngredients.Add(randomIngredient);
                         }
                     }
                     else
                     {
-                        Log.Message("randomIngredient is null");
+                        randomIngredient = item.filter.AllowedThingDefs.Where(i => i.IsIngestible && i.IsRawFood() && i.ingestible.JoyKind != null
+                            && i.ingestible.JoyKind.defName != "Chemical" && !i.defName.Contains("Glycerol")).RandomElementWithFallback();
+                        //Log.Message("randomIngredient Assigned: " + (randomIngredient != null ? randomIngredient.defName : "Is Null"));
+                        //Log.Message("randomIngredient is null");
                     }
 
                     /*
@@ -694,7 +744,7 @@ namespace AssortedTweaks
             //    possible += item.defName + ", ";
             //}
             //Log.Message(possible);
-            Log.Message("Reached the end. ingredient count is: " + (possibleIngredients == null ? "Null" : possibleIngredients.Count.ToString()));
+            //Log.Message("Reached the end. ingredient count is: " + (possibleIngredients == null ? "Null" : possibleIngredients.Count.ToString()));
             return possibleIngredients;
         }
 
@@ -782,5 +832,230 @@ namespace AssortedTweaks
             visible = true;
         }
     }
+
+    /*
+     * Grab tweakValues
+     */
+    /*
+     [HarmonyPatch(typeof(EditWindow_TweakValues), "FindAllTweakables")]
+     public class FindAllTweakables_Patch
+     {
+         public static void Postfix(ref IEnumerable<FieldInfo> __result)
+         {
+             *//*
+             TweakValue_DoWindowContents_Patch.tweakValueFields = __result.Select<FieldInfo, TweakValue_DoWindowContents_Patch.TweakInfo>((Func<FieldInfo, TweakValue_DoWindowContents_Patch.TweakInfo>)(field => new TweakValue_DoWindowContents_Patch.TweakInfo()
+             {
+                 field = field,
+                 tweakValue = field.TryGetAttribute<TweakValue>(),
+                 initial = TweakValue_DoWindowContents_Patch.GetAsFloat(field)
+             })).OrderBy<TweakValue_DoWindowContents_Patch.TweakInfo, string>((Func<TweakValue_DoWindowContents_Patch.TweakInfo, string>)(ti => string.Format("{0}.{1}", (object)ti.tweakValue.category, (object)ti.field.DeclaringType.Name))).ToList<TweakValue_DoWindowContents_Patch.TweakInfo>();
+
+             if (TweakValue_DoWindowContents_Patch.tweakValueFields != null)
+             {
+                 TweakValue_DoWindowContents_Patch.categories = new List<string>();
+                 foreach (var item in TweakValue_DoWindowContents_Patch.tweakValueFields)
+                 {
+                     if (item.tweakValue != null && !categories.Contains(item.tweakValue.category))
+                         TweakValue_DoWindowContents_Patch.categories.Add(item.tweakValue.category);
+                     if (item.tweakValue == null)
+                         Log.Message("Null TweakValue");
+                 }
+             }
+             */ /*
+            int count = 0;
+            tweakValueFields = (from ti in __result.Select(delegate (FieldInfo field)
+            {
+                Log.Message("Entered Here " + count);
+                if (field.Name.ToLower().Contains("minticks")) 
+                {
+                    return new TweakInfo();
+                }
+                TweakInfo result = default(TweakInfo);
+                result.field = field;
+                result.tweakValue = field.TryGetAttribute<TweakValue>();
+                result.initial = GetAsFloat(field);
+                count++;
+                return result;
+            })
+                                orderby $"{ti.tweakValue.category}.{ti.field.DeclaringType.Name}"
+                                select ti).ToList();
+            TweakValue_DoWindowContents_Patch.categories = new List<string>();
+            Log.Message("Reached Here 1");
+            foreach (var item in tweakValueFields)
+            {
+                if (item.tweakValue != null && !categories.Contains(item.tweakValue.category))
+                    categories.Add(item.tweakValue.category);
+                if (item.tweakValue == null)
+                    Log.Message("Null TweakValue: " + item.ToString());
+            }
+            Log.Message("Reached Here 2");
+            selected = categories.First();
+        }
+    }
+    */
+    /*
+     * Improve performance of tweaks menu
+     */
+    /*
+   [HarmonyPatch(typeof(EditWindow_TweakValues), "DoWindowContents", new System.Type[] { typeof(Rect)})]
+   public class TweakValue_DoWindowContents_Patch
+   {
+       private static Vector2 scrollPosition;
+       public static List<TweakValue_DoWindowContents_Patch.TweakInfo> tweakValueFields;
+       public static List<string> categories;
+       public static string selected;
+
+       public static bool Prefix(EditWindow_TweakValues __instance, Rect inRect)
+       {
+           if (tweakValueFields != null)
+           {
+               Text.Font = GameFont.Small;
+               Rect outRect;
+               //Rect header = inRect.ContractedBy(18f);
+               //selected = "";
+               Rect rect1 = outRect = inRect.ContractedBy(4f); //4f original
+               rect1.xMax -= 33f;
+               Rect rectSelectable = new Rect(0.0f, 0.0f, EditWindow_TweakValues.CategoryWidth, Text.CalcHeight("test", 1000f));
+               if (Widgets.ButtonText(rectSelectable, selected, true, true, Color.white))
+               {
+                   List<FloatMenuOption> options = new List<FloatMenuOption>();
+                   foreach (string field in categories)
+                   {
+                       options.Add(new FloatMenuOption((string)field, (Action)(() =>
+                       {
+                           selected = field;
+                           //__instance.DoWindowContents(inRect);
+                           //this.Setup();
+                       })));
+                   }
+               Find.WindowStack.Add((Window)new FloatMenu(options));
+               }
+               if (!selected.NullOrEmpty())
+               {
+                   Rect rect2 = new Rect(0.0f, 0.0f, EditWindow_TweakValues.CategoryWidth, Text.CalcHeight("test", 1000f));
+                   Rect rect3 = new Rect(rect2.xMax, 0.0f, EditWindow_TweakValues.TitleWidth, rect2.height);
+                   Rect rect4 = new Rect(rect3.xMax, 0.0f, EditWindow_TweakValues.NumberWidth, rect2.height);
+                   Rect rect5 = new Rect(rect4.xMax, 0.0f, rect1.width - rect4.xMax, rect2.height);
+                   ref Vector2 local = ref scrollPosition;
+                   Rect viewRect = new Rect(0.0f, -20f, rect1.width, rect2.height * (float)tweakValueFields.Count);
+                   Widgets.BeginScrollView(outRect, ref local, viewRect);
+                   foreach (TweakInfo tweakValueField in tweakValueFields.Where(f => f.tweakValue.category == selected))
+                   {
+                       Widgets.Label(rect2, tweakValueField.tweakValue.category);
+                       Widgets.Label(rect3, string.Format("{0}.{1}", (object)tweakValueField.field.DeclaringType.Name, (object)tweakValueField.field.Name));
+                       float input;
+                       bool flag;
+                       if (tweakValueField.field.FieldType == typeof(float) || tweakValueField.field.FieldType == typeof(int) || tweakValueField.field.FieldType == typeof(ushort))
+                       {
+                           double asFloat = (double)GetAsFloat(tweakValueField.field);
+                           input = Widgets.HorizontalSlider(rect5, GetAsFloat(tweakValueField.field), tweakValueField.tweakValue.min, tweakValueField.tweakValue.max);
+                           SetFromFloat(tweakValueField.field, input);
+                           double num = (double)input;
+                           flag = asFloat != num;
+                       }
+                       else if (tweakValueField.field.FieldType == typeof(bool))
+                       {
+                           int num1;
+                           bool checkOn = (num1 = (bool)tweakValueField.field.GetValue((object)null) ? 1 : 0) != 0;
+                           Widgets.Checkbox(rect5.xMin, rect5.yMin, ref checkOn);
+                           tweakValueField.field.SetValue((object)null, (object)checkOn);
+                           input = checkOn ? 1f : 0.0f;
+                           int num2 = checkOn ? 1 : 0;
+                           flag = num1 != num2;
+                       }
+                       else
+                       {
+                           Log.ErrorOnce(string.Format("Attempted to tweakvalue unknown field type {0}", (object)tweakValueField.field.FieldType), 83944645);
+                           flag = false;
+                           input = tweakValueField.initial;
+                       }
+                       if ((double)input != (double)tweakValueField.initial)
+                       {
+                           GUI.color = Color.red;
+                           Text.WordWrap = false;
+                           Widgets.Label(rect4, string.Format("{0} -> {1}", (object)tweakValueField.initial, (object)input));
+                           Text.WordWrap = true;
+                           GUI.color = Color.white;
+                           if (Widgets.ButtonInvisible(rect4))
+                           {
+                               flag = true;
+                               if (tweakValueField.field.FieldType == typeof(float) || tweakValueField.field.FieldType == typeof(int) || tweakValueField.field.FieldType == typeof(ushort))
+                                   SetFromFloat(tweakValueField.field, tweakValueField.initial);
+                               else if (tweakValueField.field.FieldType == typeof(bool))
+                                   tweakValueField.field.SetValue((object)null, (object)((double)tweakValueField.initial != 0.0));
+                               else
+                                   Log.ErrorOnce(string.Format("Attempted to tweakvalue unknown field type {0}", (object)tweakValueField.field.FieldType), 83944646);
+                           }
+                       }
+                       else
+                           Widgets.Label(rect4, string.Format("{0}", (object)tweakValueField.initial));
+                       if (flag)
+                       {
+                           MethodInfo method = tweakValueField.field.DeclaringType.GetMethod(tweakValueField.field.Name + "_Changed", BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
+                           if (method != (MethodInfo)null)
+                               method.Invoke((object)null, (object[])null);
+                       }
+                       rect2.y += rect2.height;
+                       rect3.y += rect2.height;
+                       rect4.y += rect2.height;
+                       rect5.y += rect2.height;
+                   }
+                   Widgets.EndScrollView();
+               }
+               return false;
+
+           }
+           return true;
+       }
+
+       public void SelectCategory(string s)
+       {
+           selected = s;
+       }
+
+       private static bool ShowThingButton(Rect containerRect, bool withBackButtonOffset = false)
+       {
+           float x = (float)((double)containerRect.x + (double)containerRect.width - 14.0 - 200.0 - 16.0);
+           if (withBackButtonOffset)
+               x -= 136f;
+           return Widgets.ButtonText(new Rect(x, containerRect.y + 18f, 200f, 40f), (string)"Select_Thing".Translate());
+       }
+
+       public static float GetAsFloat(FieldInfo field)
+       {
+           if (field.FieldType == typeof(float))
+               return (float)field.GetValue((object)null);
+           if (field.FieldType == typeof(bool))
+               return (bool)field.GetValue((object)null) ? 1f : 0.0f;
+           if (field.FieldType == typeof(int))
+               return (float)(int)field.GetValue((object)null);
+           if (field.FieldType == typeof(ushort))
+               return (float)(ushort)field.GetValue((object)null);
+           Log.ErrorOnce(string.Format("Attempted to return unknown field type {0} as a float", (object)field.FieldType), 83944644);
+           return 0.0f;
+       }
+
+       public static void SetFromFloat(FieldInfo field, float input)
+       {
+           if (field.FieldType == typeof(float))
+               field.SetValue((object)null, (object)input);
+           else if (field.FieldType == typeof(bool))
+               field.SetValue((object)null, (object)((double)input != 0.0));
+           else if (field.FieldType == typeof(int))
+               field.SetValue((object)field, (object)(int)input);
+           else if (field.FieldType == typeof(ushort))
+               field.SetValue((object)field, (object)(ushort)input);
+           else
+               Log.ErrorOnce(string.Format("Attempted to set unknown field type {0} from a float", (object)field.FieldType), 83944645);
+       }
+
+       public struct TweakInfo
+       {
+           public FieldInfo field;
+           public TweakValue tweakValue;
+           public float initial;
+       }
+       
+    }*/
 
 }
