@@ -12,7 +12,6 @@ using System.Diagnostics;
 using Verse.AI;
 using System.Globalization;
 using System.Net.NetworkInformation;
-using static HarmonyLib.Code;
 using System.Runtime.Remoting.Messaging;
 using Random = UnityEngine.Random;
 
@@ -77,6 +76,27 @@ namespace AssortedTweaks
 
             if (foodDef.ingestible.sourceDef == null)
                 return;
+
+            if (ingester == null) 
+            {
+                if (DebugSettings.godMode)
+                    Log.Warning("Pawn is Null");
+                return;
+            }
+
+            if (ingester.RaceProps == null)
+            {
+                if (DebugSettings.godMode)
+                    Log.Warning(ingester.Name + "'s RaceProps is Null. Pawn with Invalid race.");
+                return;
+            }
+
+            if (ingester.def == null)
+            {
+                if (DebugSettings.godMode)
+                    Log.Warning(ingester.Name + "'s def is Null");
+                return;
+            }
 
             if (ingester.RaceProps.Humanlike && ingester.def != null && foodDef.IsIngestible)
             {
