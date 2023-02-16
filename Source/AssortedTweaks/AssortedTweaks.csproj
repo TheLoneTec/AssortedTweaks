@@ -33,22 +33,24 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>..\Hardcore-SK-Source-master\Hardcore-SK-Source-master\R1.4\Assemblies\0Harmony.dll</HintPath>
+      <HintPath>..\..\..\Hardcore-SK-Source\R1.4\Assemblies\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="AlienRace">
-      <HintPath>..\Hardcore-SK-Source-master\Hardcore-SK-Source-master\R1.4\Assemblies\AlienRace.dll</HintPath>
+      <HintPath>..\..\..\Hardcore-SK-Source\R1.4\Assemblies\AlienRace.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\Hardcore-SK-Source-master\Hardcore-SK-Source-master\R1.4\Assemblies\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\..\..\Hardcore-SK-Source\R1.4\Assemblies\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\Hardcore-SK-Source-master\Hardcore-SK-Source-master\R1.4\Assemblies\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>..\..\..\Hardcore-SK-Source\R1.4\Assemblies\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>..\Hardcore-SK-Source-master\Hardcore-SK-Source-master\R1.4\Assemblies\UnityEngine.IMGUIModule.dll</HintPath>
+      <HintPath>..\..\..\Hardcore-SK-Source\R1.4\Assemblies\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\..\..\Hardcore-SK-Source\R1.4\Assemblies\UnityEngine.TextRenderingModule.dll</HintPath>
+    </Reference>
     <Reference Include="VersionFromManifest">
       <HintPath>lib\VersionFromManifest.dll</HintPath>
     </Reference>
