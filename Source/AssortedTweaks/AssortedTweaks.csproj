@@ -56,6 +56,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DebugWindowsOpener_DevToolStarterOnGUI_Patch.cs" />
+    <Compile Include="KeyBindingDefOf.cs" />
     <Compile Include="ThingCategoryDefOf.cs" />
     <Compile Include="HarmonyPatches.cs" />
     <Compile Include="AssortedTweaks.cs" />

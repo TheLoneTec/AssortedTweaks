@@ -71,6 +71,13 @@ namespace AssortedTweaks
             if (!AssortedTweaksMod.instance.Settings.MeatIngredients)
                 return;
 
+            if (foodDef == null)
+            {
+                if (DebugSettings.godMode)
+                    Log.Warning("foodDef is Null");
+                return;
+            }
+
             if (foodDef.ingestible == null)
                 return;
 
@@ -260,7 +267,22 @@ namespace AssortedTweaks
                 isCannible = false;
             } catch (Exception e)
             {
-                Log.Warning("Assorted Tweaks Encountered an Error: " + e.Message + Environment.NewLine + e.StackTrace);
+                Log.Warning("Assorted Tweaks Encountered an Error (This is caused by: " 
+                    + __result != null ? __result.def.defName : "Trying to spawn null thing or ingredient" + "): " + e.Message + Environment.NewLine + e.StackTrace);
+                if (__result != null & __result.TryGetComp<CompIngredients>() != null)
+                {
+                    foreach (var item in __result.TryGetComp<CompIngredients>().ingredients)
+                    {
+                        if (item != null)
+                        {
+                            Log.Message("Ingredient: " + item.defName);
+                        }
+                        else
+                        {
+                            Log.Message("Ingredient: Null Ingredient");
+                        }
+                    }
+                }
             }
         }
 
@@ -850,6 +872,19 @@ namespace AssortedTweaks
         public static void Postfix(ref AcceptanceReport __result, ref Pawn_TrainingTracker __instance, TrainableDef td,out bool visible)
         {
             visible = true;
+        }
+    }
+
+    [HarmonyPatch(typeof(DebugActionsUtility), "PointsOptions")]
+    public class MoreDevRaidpoints
+    {
+        [HarmonyPostfix]
+        public static void PointsOptions_Postfix(bool extended, ref IEnumerable<float> __result)
+        {
+            List<float> list = __result.ToList<float>();
+            for (int index = 11000; index <= 30000; index += 1000)
+                list.Add((float)index);
+            __result = (IEnumerable<float>)list;
         }
     }
 
