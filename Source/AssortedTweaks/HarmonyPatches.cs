@@ -55,11 +55,17 @@ namespace AssortedTweaks
                 {
                     destIngredients.Remove(item);
                 }
-            }
-            //CompIngredients tmp = new CompIngredients();
-            //tmp.ingredients = srcIngredients;
-            //CorrectIngredients.correctIngredients(ref tmp);
-            //srcIngredients = tmp.ingredients;
+            }/*
+            CompIngredients tmp = new CompIngredients();
+            tmp.ingredients = srcIngredients;
+            foreach (var item in tmp.ingredients)
+            {
+                if (item.IsMeat || (item.ingestible != null && item.ingestible.sourceDef != null))
+                {
+                    CorrectIngredients.correctIngredients(ref tmp);
+                    srcIngredients = tmp.ingredients;
+                }
+            }*/
         }
     }
 
@@ -267,9 +273,8 @@ namespace AssortedTweaks
                 isCannible = false;
             } catch (Exception e)
             {
-                Log.Warning("Assorted Tweaks Encountered an Error (This is caused by: " 
-                    + __result != null ? __result.def.defName : "Trying to spawn null thing or ingredient" + "): " + e.Message + Environment.NewLine + e.StackTrace);
-                if (__result != null & __result.TryGetComp<CompIngredients>() != null)
+                Log.Warning("Assorted Tweaks Encountered an Error:" + e.Message + " caused by " + e.Source + Environment.NewLine + e.StackTrace);
+                if (DebugSettings.godMode && __result != null & __result.TryGetComp<CompIngredients>() != null)
                 {
                     foreach (var item in __result.TryGetComp<CompIngredients>().ingredients)
                     {
