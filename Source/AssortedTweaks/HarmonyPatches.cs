@@ -14,6 +14,7 @@ using System.Globalization;
 using System.Net.NetworkInformation;
 using System.Runtime.Remoting.Messaging;
 using Random = UnityEngine.Random;
+using System.Security.Cryptography;
 
 namespace AssortedTweaks
 {
@@ -243,7 +244,7 @@ namespace AssortedTweaks
                             comp = thing.TryGetComp<CompIngredients>();
                             if (comp != null)
                             {
-                                correctIngredients(ref comp);
+                                correctIngredients(ref comp, loc, map);
                             }
                         }
                     }
@@ -257,7 +258,7 @@ namespace AssortedTweaks
                             if (comp != null)
                             {
                                 //Log.Message("Correcting Ingredients For: "  + thing.def.defName);
-                                correctIngredients(ref comp);
+                                correctIngredients(ref comp, loc, map);
                             }
                         }
                     }
@@ -267,13 +268,13 @@ namespace AssortedTweaks
                     comp = __result.TryGetComp<CompIngredients>();
                     if (comp != null)
                     {
-                        correctIngredients(ref comp);
+                        correctIngredients(ref comp, loc, map);
                     }
                 }
                 isCannible = false;
             } catch (Exception e)
             {
-                Log.Warning("Assorted Tweaks Encountered an Error:" + e.Message + " caused by " + e.Source + Environment.NewLine + e.StackTrace);
+                Log.Warning("Assorted Tweaks Encountered an Error (enable godMode for more info):" + e.Message + " caused by " + e.Source + Environment.NewLine + e.StackTrace);
                 if (DebugSettings.godMode && __result != null & __result.TryGetComp<CompIngredients>() != null)
                 {
                     foreach (var item in __result.TryGetComp<CompIngredients>().ingredients)
@@ -291,7 +292,7 @@ namespace AssortedTweaks
             }
         }
 
-        public static void correctIngredients(ref CompIngredients comp)
+        public static void correctIngredients(ref CompIngredients comp, IntVec3 loc, Map map)
         {
             if (comp != null)
             {
@@ -300,15 +301,37 @@ namespace AssortedTweaks
 
                 if (!comp.ingredients.NullOrEmpty())
                 {
-                    //Log.Message("Has Ingredient Comp: " + comp.parent.def.defName + " and isnt a meal");
+                    if (DebugSettings.godMode)  
+                        Log.Message("Has Ingredient Comp: " + comp.parent.def.defName + " and isnt a meal");
                     foreach (var item in comp.ingredients.Where(i => i.race != null))
                     {
                         ThingDef newIngredient = null;
-                        if ((item.category == ThingCategory.Item) || !item.thingCategories.Contains(ThingCategoryDefOf.MeatRaw) || !item.IsIngestible ||
+                        if (DebugSettings.godMode)
+                        {
+                            Log.Message("ingredient is: " + item.defName);
+                            Log.Message("category is: " + item.category);
+                            if (item.thingCategories != null)
+                                Log.Message("thingCategory count is: " + item.thingCategories.Count);
+                            Log.Message("Is Ingestible? " + item.IsIngestible);
+                            if (item.IsIngestible)
+                            {
+                                Log.Message("sourceDef is: " + item.ingestible.sourceDef.defName);
+                                Log.Message("foodType is: " + item.ingestible.foodType);
+                            }
+                        }
+
+                        if (item.category != ThingCategory.Item || (item.thingCategories != null && !item.thingCategories.Contains(ThingCategoryDefOf.MeatRaw)) || !item.IsIngestible ||
                             item.ingestible.sourceDef == null || !(item.ingestible.foodType == FoodTypeFlags.Meat))
                         {
                             oldIngredients.Add(item);
-                            ThingDef originalRaceIngredient = DefDatabase<ThingDef>.AllDefs.Where(i => i.race == item.race).First();
+                            ThingDef originalRaceIngredient = originalRaceIngredient = DefDatabase<ThingDef>.AllDefs.Where(i => i.defName == item.defName && i.label == item.label).First();
+
+                            if (originalRaceIngredient == null)
+                            {
+                                newIngredients.Add(newIngredient);
+                                return;
+                            }
+
                             newIngredient = GetInfo(originalRaceIngredient);
                             SetAsMeat(ref newIngredient, originalRaceIngredient, item);
                             newIngredients.Add(newIngredient);
@@ -319,7 +342,7 @@ namespace AssortedTweaks
                 {
                     //List<ThingDef> possibleIngredients = new List<ThingDef>();
                     //Log.Message("Beginning Generation of " + comp.parent.def.defName + ". Held By " + (comp.parent.ParentHolder.ParentHolder is Pawn && (comp.parent.ParentHolder.ParentHolder as Pawn).Name != null ? (comp.parent.ParentHolder.ParentHolder as Pawn).Name.ToStringFull : "None"));
-                    GenerateIngredients(comp.parent.def,ref newIngredients);
+                    GenerateIngredients(comp.parent.def,ref newIngredients, loc, map);
                 }
 
 
@@ -458,7 +481,7 @@ namespace AssortedTweaks
             }
         }
         
-        public static void GenerateIngredients(ThingDef food, ref List<ThingDef> newIngredients)
+        public static void GenerateIngredients(ThingDef food, ref List<ThingDef> newIngredients, IntVec3 loc, Map map = null)
         {/*
             if (food.defName == thingName)
             {
@@ -478,12 +501,76 @@ namespace AssortedTweaks
             }*/
 
             //Log.Message("Checking " + food.defName);
+
+            if (DebugSettings.godMode)
+            {
+                Log.Message("Generate Ingredients Debug: food is " + (food != null ? food.defName : " Null."));
+                Log.Message("location is: " +(loc != null ? loc.ToString() :"Null"));
+            }
+
             CompProperties_Rottable rot = food.GetCompProperties<CompProperties_Rottable>();
             if (rot != null && rot.daysToRotStart == 0)
                 return;
+
+            if (food.thingCategories != null && !food.thingCategories.Where(b => b.defName == "BodyPartsNatural").EnumerableNullOrEmpty())
+            {
+                if (DebugSettings.godMode)
+                    Log.Message("Found Natural BodyPart");
+                Pawn pawn = null;
+                ThingDef pawnDef = null;
+                if (loc != null && map != null)
+                {
+                    pawn = loc.GetFirstPawn(map);
+                    if (pawn != null)
+                        pawnDef = pawn.def;
+                }
+
+                if (pawnDef != null)
+                {
+                    ThingDef newIngredient = null;
+                    newIngredient = GetInfo(pawnDef);
+                    SetAsMeat(ref newIngredient, pawnDef);
+                    newIngredients.Add(newIngredient);
+                    return;
+                }
+                else
+                {
+                    if (DebugSettings.godMode)
+                        Log.Message("No Pawn Found");
+                    ThingDef human = DefDatabase<ThingDef>.AllDefsListForReading.Find(x => x.defName == "Human");
+                    if (human == null && DebugSettings.godMode)
+                        Log.Message("Could Find Human Meat");
+                    ThingDef meat = ConvertMeatToRandomRace(human.race.meatDef);
+                    if (meat != null)
+                    {
+                        if (DebugSettings.godMode)
+                        {
+                            if (meat.IsIngestible && meat.ingestible.sourceDef != null)
+                            {
+                                Log.Message("Assigned source is: " + meat.ingestible.sourceDef.defName);
+                            }
+                            else
+                            {
+                                Log.Message("Assigned source is: Null");
+                            }
+                        }
+                        newIngredients.Add(meat);
+                    }
+                    else
+                    {
+                        if (DebugSettings.godMode)
+                        {
+                            Log.Message("couldnt find random meat");
+                        }
+                    }
+                    return;
+                }
+            }
+
             foreach (var item in GetPossibleIngredients(food))
             {
-                //Log.Message("Entered For Loop");
+                if (DebugSettings.godMode)
+                    Log.Message("Checking Possible Ingredients");
                 //string race = "None";
                 //if (item.IsIngestible && item.ingestible.sourceDef != null)
                 //    race = item.ingestible.sourceDef.defName;
@@ -504,7 +591,7 @@ namespace AssortedTweaks
                         //Log.Message("Is Meal: " + item.defName);
                         foreach (var innerItem in GetPossibleIngredients(item))
                         {
-                            GenerateIngredients(innerItem, ref newIngredients);
+                            GenerateIngredients(innerItem, ref newIngredients, loc, map);
                         }
                     }
                     else if (item.IsIngestible)
@@ -530,7 +617,8 @@ namespace AssortedTweaks
 
         public static ThingDef ConvertMeatToRandomRace(ThingDef meat)
         {
-            //Log.Message("Trying to convert: " + meat.defName);
+            if (DebugSettings.godMode)
+                Log.Message("Trying to convert: " + (meat.defName != null ? meat.defName : "Null"));
             if (meat.IsIngestible && meat.ingestible.sourceDef != null)
             {
                 if (meat.ingestible.foodType == FoodTypeFlags.Meat && meat.thingCategories.Contains(ThingCategoryDefOf.MeatRaw) && !meat.defName.ToLower().Contains("meat"))
@@ -812,7 +900,7 @@ namespace AssortedTweaks
             return newIngredient;
         }
 
-        public static void SetAsMeat(ref ThingDef newIngredient, ThingDef originalRace, ThingDef originalIngredient)
+        public static void SetAsMeat(ref ThingDef newIngredient, ThingDef originalRace, ThingDef originalIngredient = null)
         {
             newIngredient.category = ThingCategory.Item;
             if (!newIngredient.thingCategories.NullOrEmpty())
@@ -854,7 +942,8 @@ namespace AssortedTweaks
         */
         public static void MyPostfix()
         {
-            foreach (var meat in DefDatabase<ThingDef>.AllDefs.Where(d => d.IsIngestible && d.ingestible.foodType == FoodTypeFlags.Meat && d.category == ThingCategory.Item))
+            foreach (var meat in DefDatabase<ThingDef>.AllDefs.Where(d => (d.IsIngestible && d.ingestible.foodType == FoodTypeFlags.Meat && d.category == ThingCategory.Item)/*
+            || d.category == ThingCategory.Item && d.thingCategories != null && d.thingCategories.Where(b => b.parent == ThingCategoryDefOf.BodyParts).EnumerableNullOrEmpty()*/))
             {
                 if (meat.GetCompProperties<CompProperties_Ingredients>() == null)
                 {
@@ -862,6 +951,17 @@ namespace AssortedTweaks
                     comp.splitTransferableFoodKind = true;
                     meat.comps.Add(comp);
                 }
+                /*
+                if (!meat.IsIngestible && meat.thingCategories != null && meat.thingCategories.Where(b => b.parent == ThingCategoryDefOf.BodyParts).EnumerableNullOrEmpty())
+                {
+                    //ThingWithComps thing1 = (ThingWithComps)ThingMaker.MakeThing(DefDatabase<ThingDef>.AllDefsListForReading.Find(d => d.defName == "Human").race.meatDef);
+                    meat.ingestible = new IngestibleProperties()
+                    {
+                        parent = meat,
+                        foodType = FoodTypeFlags.Meat,
+                        preferability = FoodPreferability.RawBad
+                    };
+                }*/
             }
         }
     }
