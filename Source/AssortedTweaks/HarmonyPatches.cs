@@ -520,7 +520,25 @@ namespace AssortedTweaks
                 ThingDef pawnDef = null;
                 if (loc != null && map != null)
                 {
-                    pawn = loc.GetFirstPawn(map);
+                    Pawn pawnFound = loc.GetFirstPawn(map);
+                    if (pawnFound != null && pawnFound.CurJob.def.defName == "DoBill" && pawnFound.CurJob.workGiverDef.defName == "DoBillsMedicalHumanOperation")
+                    {
+                        //Log.Message("targetA is: " + pawnFound.CurJob.targetA);
+                        pawn = (pawnFound.CurJob.targetA.Pawn);
+                    }
+                    else
+                    {
+                        CellRect rect = CellRect.CenteredOn(loc, 1);
+                        foreach (var pos in rect)
+                        {
+                            Pawn pawnFound2 = pos.GetFirstPawn(map);
+                            if (pawnFound2 != null && pawnFound2.CurJob.def.defName == "DoBill" && pawnFound2.CurJob.workGiverDef.defName == "DoBillsMedicalHumanOperation")
+                            {
+                                //Log.Message("targetA is: " + pawnFound2.CurJob.targetA);
+                                pawn = (pawnFound2.CurJob.targetA.Pawn);
+                            }
+                        }
+                    }
                     if (pawn != null)
                         pawnDef = pawn.def;
                 }
