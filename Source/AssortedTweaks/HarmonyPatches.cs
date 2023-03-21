@@ -15,6 +15,8 @@ using System.Net.NetworkInformation;
 using System.Runtime.Remoting.Messaging;
 using Random = UnityEngine.Random;
 using System.Security.Cryptography;
+using System.Text;
+using AssortedTweaks;
 
 namespace AssortedTweaks
 {
@@ -70,7 +72,148 @@ namespace AssortedTweaks
         }
     }
 
-        [HarmonyPatch(typeof(FoodUtility), "IsVeneratedAnimalMeatOrCorpse")]
+    [HarmonyPatch(typeof(CompIngredients), "AllowStackWith", new System.Type[] { typeof(Thing) },
+        new ArgumentType[] { ArgumentType.Normal })]
+    public class AllowStackWith_Patch
+    {
+        public static bool Prefix(bool __result, CompIngredients __instance, Thing otherStack,  object[] __state)
+        {/*
+            CompIngredients compIngredients = otherStack.TryGetComp<CompIngredients>();
+
+            if (__instance.Props.performMergeCompatibilityChecks)
+                __state.AddItem(true);
+            else
+                __state.AddItem(false);
+            if (compIngredients.Props.performMergeCompatibilityChecks)
+                __state.AddItem(true);
+            else
+                __state.AddItem(false);
+
+            string reason = "";
+            if (FoodUtilities.CanBeStacked(otherStack,out reason))
+            {
+                __instance.Props.performMergeCompatibilityChecks = false;
+                compIngredients.Props.performMergeCompatibilityChecks = false;
+            }*/
+            return true;
+        }
+
+        public static void Postfix(ref bool __result, CompIngredients __instance, Thing otherStack/*, object[] __state*/)
+        {
+            //CompIngredients compIngredients = otherStack.TryGetComp<CompIngredients>();
+            string reason = "";
+            if (!FoodUtilities.CanBeStacked(otherStack, out reason))
+            {
+                if (reason != "")
+                    __result = false;
+            }
+            string tmp = "";
+            if (!FoodUtilities.CanBeStacked(__instance.parent, out tmp))
+            {
+                if (tmp != "")
+                    __result = false;
+            }
+            if (reason == tmp)
+                __result = true;
+            //__instance.Props.performMergeCompatibilityChecks = (bool)__state[0];
+            //compIngredients.Props.performMergeCompatibilityChecks = (bool)__state[1];
+        }
+    }
+    
+    [HarmonyPatch(typeof(CompIngredients), "CompInspectStringExtra")]
+    public class CompInspectStringExtra_Patch
+    {
+        public static void Postfix(ref string __result, CompIngredients __instance)
+        {
+            //Log.Message("Current result: " + __result);
+            StringBuilder stringBuilder = new StringBuilder();
+            if (__instance.ingredients.Count > 0)
+            {
+                stringBuilder.Append("Ingredients".Translate() + ": ");
+                string reason = "";
+                stringBuilder.Append(__instance.GetIngredientsString(includeMergeCompatibility: !FoodUtilities.CanBeStacked(__instance.parent, out reason), out var hasMergeCompatibilityIngredients));
+                //if (DebugSettings.godMode)
+                    //Log.Message("stringBuilder: " + stringBuilder.ToString() + ". reason is: " + reason);
+                if (hasMergeCompatibilityIngredients)
+                {
+                    //Log.Message("hasMergeCompatibilityIngredients");
+                    if (reason != "")
+                    {
+                        stringBuilder.Append(" (* " + "OnlyStacksWithCompatibleMeals".Translate().Resolve() + ": " + reason + ")");
+                    }
+                    else
+                    {
+                        stringBuilder.Append(" (* " + "OnlyStacksWithCompatibleMeals".Translate().Resolve() + ")");
+                    }
+                }
+            }
+            
+            if (ModsConfig.IdeologyActive)
+            {
+                stringBuilder.AppendLineIfNotEmpty().Append(GetFoodKindInspectString(__instance));
+            }
+
+            //if (DebugSettings.godMode)
+                //Log.Message("CompInspectStringExtra: " + stringBuilder.ToString());
+            __result = stringBuilder.ToString();
+            //return;
+        }
+        
+        private static string GetFoodKindInspectString(CompIngredients comp)
+        {
+            //if (DebugSettings.godMode)
+                //Log.Message("GetFoodKindInspectString Entered");
+            if (FoodUtility.GetFoodKind(comp.parent) == FoodKind.NonMeat)
+            {
+                return "MealKindVegetarian".Translate().Colorize(Color.green);
+            }
+
+            if (FoodUtility.GetFoodKind(comp.parent) == FoodKind.Meat)
+            {
+                return "MealKindMeat".Translate().Colorize(ColorLibrary.RedReadable);
+            }
+
+            return "MealKindAny".Translate().Colorize(Color.white);
+        }
+    }
+
+    [HarmonyPatch(typeof(CompIngredients), "GetIngredientsString")]
+    public class GetIngredientsString_Patch
+    {
+        public static bool Prefix(ref string __result,CompIngredients __instance, bool includeMergeCompatibility, out bool hasMergeCompatibilityIngredients)
+        {
+            //Log.Message("GetIngredientsString: " + __result);
+            StringBuilder stringBuilder = new StringBuilder();
+            hasMergeCompatibilityIngredients = false;
+            for (int i = 0; i < __instance.ingredients.Count; i++)
+            {
+                ThingDef thingDef = __instance.ingredients[i];
+                stringBuilder.Append((i == 0) ? thingDef.LabelCap.Resolve() : thingDef.label);
+                string reason = "";
+                if (includeMergeCompatibility && __instance.Props.performMergeCompatibilityChecks)
+                {
+                    if (!FoodUtilities.CanIngredientBeStacked(thingDef, out reason))
+                    {
+                        //Log.Message("adding asterix");
+                        stringBuilder.Append("*");
+                        hasMergeCompatibilityIngredients = true;
+                    }
+                }
+
+                if (i < __instance.ingredients.Count - 1)
+                {
+                    stringBuilder.Append(", ");
+                }
+            }
+
+            __result = stringBuilder.ToString();
+            //if (DebugSettings.godMode)
+                //Log.Message("GetIngredientsString: " + __result);
+            return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(FoodUtility), "IsVeneratedAnimalMeatOrCorpse")]
     public class IsVeneratedAnimalMeatOrCorpse_Patch
     {
         public static void Postfix(ref bool __result, ThingDef foodDef, Pawn ingester)
@@ -224,7 +367,8 @@ namespace AssortedTweaks
                     {
                         isCannible = true;
                     }
-                    //Log.Message("CorrectedIngredients Entered for : " + __result.def.defName);
+                    if (DebugSettings.godMode)
+                        Log.Message("CorrectedIngredients Entered for : " + __result.def.defName);
                     //if (pawn.Faction != null && !factionMainMeatSource.ContainsKey(pawn.Faction))
                     //    factionMainMeatSource.Add(pawn.Faction, null);
                     //if (pawn.RaceProps.Humanlike && pawn.Faction != null && pawn.Faction != factionGroup)
@@ -687,7 +831,8 @@ namespace AssortedTweaks
             List<ThingDef> possibleIngredients = new List<ThingDef>();
             List<RecipeDef> recipes = DefDatabase<RecipeDef>.AllDefs.Where(recipe1 => recipe1.products.Any(i => i.thingDef.IsIngestible) && !recipe1.defName.Contains("Glycerol")).ToList();
 
-            //Log.Message("Looking for Recipes for " + food.defName);
+            if (DebugSettings.godMode)
+                Log.Message("Looking for Recipes for " + food.defName);
             RecipeDef matchingRecipe = recipes.Where(recipe2 => !recipe2.products.Where(p => p.thingDef.defName == food.defName).EnumerableNullOrEmpty()).RandomElementWithFallback();
 
             //Log.Message("Get Possible Ingredients... ");
