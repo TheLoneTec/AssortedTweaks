@@ -56,6 +56,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DeliverAsMuchAsPossible.cs" />
+    <Compile Include="ModActive.cs" />
     <Compile Include="FoodUtilities.cs" />
     <Compile Include="Graphic_MultiAppearance.cs" />
     <Compile Include="DebugWindowsOpener_DevToolStarterOnGUI_Patch.cs" />

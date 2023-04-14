@@ -221,6 +221,11 @@ namespace AssortedTweaks
             if (!AssortedTweaksMod.instance.Settings.MeatIngredients)
                 return;
 
+            if (ingester.Ideo == null)
+            {
+                return;
+            }
+
             if (foodDef == null)
             {
                 if (DebugSettings.godMode)
