@@ -41,6 +41,9 @@
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\..\Hardcore-SK-Source\R1.4\Assemblies\Assembly-CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="Core_SK">
+      <HintPath>..\..\..\Hardcore-SK-Source\R1.4\Assemblies\Core_SK.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\..\..\Hardcore-SK-Source\R1.4\Assemblies\UnityEngine.CoreModule.dll</HintPath>
@@ -56,18 +59,28 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CoreSK_Max4Speed.cs" />
+    <Compile Include="CoreSK_Utils.cs" />
+    <Compile Include="CornerBuildable.cs" />
+    <Compile Include="CornerMineableOkay.cs" />
     <Compile Include="DeliverAsMuchAsPossible.cs" />
+    <Compile Include="HandleBlockingPlants.cs" />
     <Compile Include="ModActive.cs" />
     <Compile Include="FoodUtilities.cs" />
     <Compile Include="Graphic_MultiAppearance.cs" />
     <Compile Include="DebugWindowsOpener_DevToolStarterOnGUI_Patch.cs" />
     <Compile Include="KeyBindingDefOf.cs" />
+    <Compile Include="OverrideRadePoints.cs" />
+    <Compile Include="ShouldNotEnterCellPatch.cs" />
     <Compile Include="ThingCategoryDefOf.cs" />
     <Compile Include="HarmonyPatches.cs" />
     <Compile Include="AssortedTweaks.cs" />
     <Compile Include="AssortedTweaksMod.cs" />
     <Compile Include="AssortedTweaksSettings.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="TPSNew.cs" />
+    <Compile Include="TPSPatch.cs" />
+    <Compile Include="TryFindSpotToPlaceHaulableCloseToPatch.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

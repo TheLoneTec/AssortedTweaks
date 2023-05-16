@@ -221,6 +221,20 @@ namespace AssortedTweaks
             if (!AssortedTweaksMod.instance.Settings.MeatIngredients)
                 return;
 
+            if (ingester == null)
+            {
+                if (DebugSettings.godMode)
+                    Log.Warning("Pawn is Null");
+                return;
+            }
+
+            if (ingester.RaceProps == null)
+            {
+                if (DebugSettings.godMode)
+                    Log.Warning(ingester.Name + "'s RaceProps is Null. Pawn with Invalid race.");
+                return;
+            }
+
             if (ingester.Ideo == null)
             {
                 return;
@@ -238,20 +252,6 @@ namespace AssortedTweaks
 
             if (foodDef.ingestible.sourceDef == null)
                 return;
-
-            if (ingester == null) 
-            {
-                if (DebugSettings.godMode)
-                    Log.Warning("Pawn is Null");
-                return;
-            }
-
-            if (ingester.RaceProps == null)
-            {
-                if (DebugSettings.godMode)
-                    Log.Warning(ingester.Name + "'s RaceProps is Null. Pawn with Invalid race.");
-                return;
-            }
 
             if (ingester.def == null)
             {
