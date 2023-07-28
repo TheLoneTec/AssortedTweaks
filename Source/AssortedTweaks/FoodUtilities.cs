@@ -35,6 +35,7 @@ namespace AssortedTweaks
         {
             FactionIdeosTracker playerFactionTracker = Faction.OfPlayer.ideos;
             StringBuilder stringBuilder = new StringBuilder();
+            bool nonStackable = false;
             if (ModLister.IdeologyInstalled && playerFactionTracker != null)
             {
                 //if (DebugSettings.godMode)
@@ -60,28 +61,31 @@ namespace AssortedTweaks
 
                 CompIngredients compIngredients = otherStack.TryGetComp<CompIngredients>();
                 //if (DebugSettings.godMode)
-                    //Log.Message("compIngredients is: " + (compIngredients == null ? "Null" : "Valid"));
+                //Log.Message("compIngredients is: " + (compIngredients == null ? "Null" : "Valid"));
+                
                 if (compIngredients != null)
                 {
                     for (int i = 0; i < compIngredients.ingredients.Count; i++)
                     {
                         //if (DebugSettings.godMode)
                             //Log.Message("Checking: " + compIngredients.ingredients[i].defName);
-                        bool nonStackable = false;
+                        nonStackable = false;
                         if (compIngredients.ingredients[i].race != null)
                         {
                             if (compIngredients.ingredients[i].race.Insect && !allowInsect)
                             {
                                 //if (DebugSettings.godMode)
                                 //    Log.Message("Is Insect");
-                                stringBuilder.Append("Insect Meat");
+                                if (!stringBuilder.ToString().Contains("Insect Meat"))
+                                    stringBuilder.Append("Insect Meat");
                                 nonStackable = true;
                             }
                             else if (compIngredients.ingredients[i].race.Humanlike && !allowHumanoidMeat)
                             {
                                 //if (DebugSettings.godMode)
                                 //    Log.Message("Is Humanlike");
-                                stringBuilder.Append("Humanlike Meat");
+                                if (!stringBuilder.ToString().Contains("Humanlike Meat"))
+                                    stringBuilder.Append("Humanlike Meat");
                                 nonStackable = true;
                             }
                             else
@@ -92,7 +96,8 @@ namespace AssortedTweaks
                                     {
                                         //if (DebugSettings.godMode)
                                         //    Log.Message("Is Venerated");
-                                        stringBuilder.Append("Venerated Animal");
+                                        if (!stringBuilder.ToString().Contains("Venerated Animal"))
+                                            stringBuilder.Append("Venerated Animal");
                                         nonStackable = true;
                                     }
                                 }
@@ -104,25 +109,28 @@ namespace AssortedTweaks
                             {
                                 //if (DebugSettings.godMode)
                                 //    Log.Message("Is Meat");
-                                stringBuilder.Append("Meat");
+                                if (!stringBuilder.ToString().Contains("Meat"))
+                                    stringBuilder.Append("Meat");
                                 nonStackable = true;
                             }
                             else if (compIngredients.ingredients[i].ingestible != null && compIngredients.ingredients[i].ingestible.foodType == FoodTypeFlags.VegetableOrFruit && !allowVeg)
                             {
                                 //if (DebugSettings.godMode)
                                 //    Log.Message("Is Veg");
-                                stringBuilder.Append("Vegetable or Fruit");
+                                if (!stringBuilder.ToString().Contains("Vegetable or Fruit"))
+                                    stringBuilder.Append("Vegetable or Fruit");
                                 nonStackable = true;
                             }
                             else if (compIngredients.ingredients[i].IsFungus && !allowFungus)
                             {
                                 //if (DebugSettings.godMode)
                                 //    Log.Message("Is Fungus");
-                                stringBuilder.Append("Fungus");
+                                if (!stringBuilder.ToString().Contains("Fungus"))
+                                    stringBuilder.Append("Fungus");
                                 nonStackable = true;
                             }
                         }
-                        if (nonStackable && i != 0 && i < compIngredients.ingredients.Count - 1)
+                        if (nonStackable && i != 0 && i < compIngredients.ingredients.Count)
                         {
                             stringBuilder.Append(", ");
                         }
@@ -130,7 +138,7 @@ namespace AssortedTweaks
                 }
 
             }
-            if (stringBuilder.Length != 0)
+            if (nonStackable && stringBuilder.Length != 0)
             {
                 if (stringBuilder.ToString().EndsWith(", "))
                     reason = stringBuilder.ToString().TrimEnd(", ".ToCharArray());

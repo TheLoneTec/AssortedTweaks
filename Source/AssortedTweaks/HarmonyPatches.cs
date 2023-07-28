@@ -17,6 +17,7 @@ using Random = UnityEngine.Random;
 using System.Security.Cryptography;
 using System.Text;
 using AssortedTweaks;
+using Mono.Cecil;
 
 namespace AssortedTweaks
 {
@@ -75,9 +76,9 @@ namespace AssortedTweaks
     [HarmonyPatch(typeof(CompIngredients), "AllowStackWith", new System.Type[] { typeof(Thing) },
         new ArgumentType[] { ArgumentType.Normal })]
     public class AllowStackWith_Patch
-    {
+    {/*
         public static bool Prefix(bool __result, CompIngredients __instance, Thing otherStack,  object[] __state)
-        {/*
+        {
             CompIngredients compIngredients = otherStack.TryGetComp<CompIngredients>();
 
             if (__instance.Props.performMergeCompatibilityChecks)
@@ -94,9 +95,9 @@ namespace AssortedTweaks
             {
                 __instance.Props.performMergeCompatibilityChecks = false;
                 compIngredients.Props.performMergeCompatibilityChecks = false;
-            }*/
+            }
             return true;
-        }
+        }*/
 
         public static void Postfix(ref bool __result, CompIngredients __instance, Thing otherStack/*, object[] __state*/)
         {
@@ -216,7 +217,7 @@ namespace AssortedTweaks
     [HarmonyPatch(typeof(FoodUtility), "IsVeneratedAnimalMeatOrCorpse")]
     public class IsVeneratedAnimalMeatOrCorpse_Patch
     {
-        public static void Postfix(ref bool __result, ThingDef foodDef, Pawn ingester)
+        public static void Postfix(ref bool __result, ThingDef foodDef, Pawn ingester, Thing source = null)
         {
             if (!AssortedTweaksMod.instance.Settings.MeatIngredients)
                 return;
@@ -260,10 +261,16 @@ namespace AssortedTweaks
                 return;
             }
 
+            if (source != null && source.def.IsCorpse)
+            {
+                __result = ingester.Ideo.IsVeneratedAnimal(((Corpse)source).InnerPawn);
+                return;
+            }
+
             if (ingester.RaceProps.Humanlike && ingester.def != null && foodDef.IsIngestible)
             {
-
                 __result = ingester.Ideo.IsVeneratedAnimal(foodDef.ingestible.sourceDef);
+                return;
             }
         }
     }
@@ -473,7 +480,7 @@ namespace AssortedTweaks
                             item.ingestible.sourceDef == null || !(item.ingestible.foodType == FoodTypeFlags.Meat))
                         {
                             oldIngredients.Add(item);
-                            ThingDef originalRaceIngredient = originalRaceIngredient = DefDatabase<ThingDef>.AllDefs.Where(i => i.defName == item.defName && i.label == item.label).First();
+                            ThingDef originalRaceIngredient = DefDatabase<ThingDef>.AllDefs.Where(i => i.defName == item.defName && i.label == item.label).First();
 
                             if (originalRaceIngredient == null)
                             {
@@ -806,7 +813,7 @@ namespace AssortedTweaks
                     ThingDef randomPawn = null;
                     if (meat.IsCorpse)
                     {
-                        if (meat.defName.Contains("Mech") || meat.race != null && meat.race.FleshType != FleshTypeDefOf.Mechanoid)
+                        if (meat.race != null && meat.race.FleshType == FleshTypeDefOf.Mechanoid)
                             meat = DefDatabase<ThingDef>.AllDefs.Where(d => d.defName == "Elephant").First().race.corpseDef;
                         //Log.Message("Is Corpse");
                         randomPawn = meat.ingestible.sourceDef;
