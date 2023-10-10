@@ -33,7 +33,10 @@ namespace AssortedTweaks
         }
         public static bool CanBeStacked(Thing otherStack, out string reason)
         {
-            FactionIdeosTracker playerFactionTracker = Faction.OfPlayer.ideos;
+            FactionIdeosTracker playerFactionTracker = null;
+            if (Faction.OfPlayer != null && Faction.OfPlayer.ideos != null)
+                playerFactionTracker = Faction.OfPlayer.ideos;
+
             StringBuilder stringBuilder = new StringBuilder();
             bool nonStackable = false;
             if (ModLister.IdeologyInstalled && playerFactionTracker != null)
@@ -153,7 +156,9 @@ namespace AssortedTweaks
         public static bool CanIngredientBeStacked(ThingDef ingredient, out string reason)
         {
             //Log.Message("CanIngredientBeStacked Entered");
-            FactionIdeosTracker playerFactionTracker = Faction.OfPlayer.ideos;
+            FactionIdeosTracker playerFactionTracker = null;
+            if (Faction.OfPlayer != null)
+                    playerFactionTracker = Faction.OfPlayer.ideos;
             //Log.Message("FactionIdeosTracker passed");
             if (ModLister.IdeologyInstalled && playerFactionTracker != null)
             {

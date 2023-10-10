@@ -217,7 +217,7 @@ namespace AssortedTweaks
     [HarmonyPatch(typeof(FoodUtility), "IsVeneratedAnimalMeatOrCorpse")]
     public class IsVeneratedAnimalMeatOrCorpse_Patch
     {
-        public static void Postfix(ref bool __result, ThingDef foodDef, Pawn ingester, Thing source = null)
+        public static void Postfix(ref bool __result, ThingDef foodDef, Pawn ingester, Thing source)
         {
             if (!AssortedTweaksMod.instance.Settings.MeatIngredients)
                 return;
@@ -261,7 +261,7 @@ namespace AssortedTweaks
                 return;
             }
 
-            if (source != null && source.def.IsCorpse)
+            if (source != null && source.def.IsCorpse && (source as Corpse).InnerPawn != null)
             {
                 __result = ingester.Ideo.IsVeneratedAnimal(((Corpse)source).InnerPawn);
                 return;
@@ -813,7 +813,7 @@ namespace AssortedTweaks
                     ThingDef randomPawn = null;
                     if (meat.IsCorpse)
                     {
-                        if (meat.race != null && meat.race.FleshType == FleshTypeDefOf.Mechanoid)
+                        if (meat.race != null && meat.race.FleshType != FleshTypeDefOf.Mechanoid)
                             meat = DefDatabase<ThingDef>.AllDefs.Where(d => d.defName == "Elephant").First().race.corpseDef;
                         //Log.Message("Is Corpse");
                         randomPawn = meat.ingestible.sourceDef;
