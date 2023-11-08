@@ -6,6 +6,7 @@
 
 using HarmonyLib;
 using RimWorld;
+using SK;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,6 +65,9 @@ namespace AssortedTweaks
           else
             designationManager.AddDesignation(new Designation((LocalTargetInfo) (Thing) plant, DesignationDefOf.CutPlant));
         }
+        // Survival Tools check
+        if (AssortedTweaksMod.ST_FellTree != null && (t as Plant).def.ingestible != null && (t as Plant).def.ingestible.foodType == FoodTypeFlags.Tree && worker.workSettings.GetPriority(AssortedTweaksMod.ST_FellTree) > 0)
+            return true;
       }
       return false;
     }
