@@ -52,10 +52,13 @@ namespace AssortedTweaks
 
     private static bool CanCutBlockingPlant(Pawn worker, Thing t)
     {
-      if (!AssortedTweaksMod.instance.Settings.CutPlantsBeforeBuilding || worker.workSettings.WorkIsActive(WorkTypeDefOf.PlantCutting))
-        return true;
       if (t is Plant plant)
       {
+        // Survival Tools check
+        bool assignedToTreeFell = AssortedTweaksMod.ST_FellTree == null || ((t as Plant).def.ingestible != null && (t as Plant).def.ingestible.foodType == FoodTypeFlags.Tree && worker.workSettings.GetPriority(AssortedTweaksMod.ST_FellTree) > 0);
+        if ((!AssortedTweaksMod.instance.Settings.CutPlantsBeforeBuilding || worker.workSettings.WorkIsActive(WorkTypeDefOf.PlantCutting)) && assignedToTreeFell)
+          return true;
+
         DesignationManager designationManager = t.Map.designationManager;
         if (!designationManager.AllDesignationsOn((Thing) plant).Any<Designation>((Func<Designation, bool>) (x => x.def == DesignationDefOf.CutPlant || x.def == DesignationDefOf.HarvestPlant)))
         {
@@ -65,9 +68,6 @@ namespace AssortedTweaks
           else
             designationManager.AddDesignation(new Designation((LocalTargetInfo) (Thing) plant, DesignationDefOf.CutPlant));
         }
-        // Survival Tools check
-        if (AssortedTweaksMod.ST_FellTree != null && (t as Plant).def.ingestible != null && (t as Plant).def.ingestible.foodType == FoodTypeFlags.Tree && worker.workSettings.GetPriority(AssortedTweaksMod.ST_FellTree) > 0)
-            return true;
       }
       return false;
     }
