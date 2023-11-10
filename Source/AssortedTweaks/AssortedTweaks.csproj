@@ -57,6 +57,9 @@
     <Reference Include="VersionFromManifest">
       <HintPath>lib\VersionFromManifest.dll</HintPath>
     </Reference>
+    <Reference Include="WorkTab">
+      <HintPath>..\..\..\Hardcore-SK-Source\R1.4\Assemblies\WorkTab.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoreSK_Max4Speed.cs" />

@@ -100,3 +100,5 @@ E:\Users\kacey\Documents\GitHub\PacasForks\AssortedTweaks\Source\AssortedTweaks\
 E:\Users\kacey\Documents\GitHub\PacasForks\AssortedTweaks\Source\AssortedTweaks\ExpandedRoofing.dll
 E:\Users\kacey\Documents\GitHub\PacasForks\AssortedTweaks\Source\AssortedTweaks\LWM.DeepStorage.dll
 E:\Users\kacey\Documents\GitHub\PacasForks\AssortedTweaks\Source\AssortedTweaks\IHoldMultipleThings.dll
+E:\Users\kacey\Documents\GitHub\PacasForks\AssortedTweaks\Source\AssortedTweaks\WorkTab.dll
+E:\Users\kacey\Documents\GitHub\PacasForks\AssortedTweaks\Source\AssortedTweaks\FluffyUI.dll

@@ -6,6 +6,7 @@
 
 using HarmonyLib;
 using RimWorld;
+using RimWorld.Planet;
 using SK;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using Verse;
+using WorkTab;
 
 namespace AssortedTweaks
 {
@@ -55,7 +57,8 @@ namespace AssortedTweaks
       if (t is Plant plant)
       {
         // Survival Tools check
-        bool assignedToTreeFell = AssortedTweaksMod.ST_FellTree == null || ((t as Plant).def.ingestible != null && (t as Plant).def.ingestible.foodType == FoodTypeFlags.Tree && worker.workSettings.GetPriority(AssortedTweaksMod.ST_FellTree) > 0);
+        WorkGiverDef TreeFell = DefDatabase<WorkGiverDef>.AllDefsListForReading.Find(d => d.defName == "FellTrees");
+        bool assignedToTreeFell = TreeFell == null || (t.def.plant?.IsTree == true && PriorityManager.Get[worker].GetPriority(TreeFell, GenLocalDate.HourOfDay(worker)) > 0);
         if ((!AssortedTweaksMod.instance.Settings.CutPlantsBeforeBuilding || worker.workSettings.WorkIsActive(WorkTypeDefOf.PlantCutting)) && assignedToTreeFell)
           return true;
 

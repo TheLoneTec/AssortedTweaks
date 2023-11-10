@@ -1,4 +1,5 @@
 ﻿using Mlie;
+using RimWorld;
 using UnityEngine;
 using Verse;
 
@@ -10,7 +11,6 @@ namespace AssortedTweaks
     public static AssortedTweaksMod instance;
     private static string currentVersion;
     private AssortedTweaksSettings settings;
-    public static WorkTypeDef ST_FellTree;
 
     public AssortedTweaksMod(ModContentPack content)
     : base(content)
@@ -18,8 +18,6 @@ namespace AssortedTweaks
       AssortedTweaksMod.instance = this;
       AssortedTweaksMod.currentVersion = VersionFromManifest.GetVersionFromModMetaData(content.ModMetaData);
 
-      // Mod Compatibility
-      ST_FellTree = DefDatabase<WorkTypeDef>.AllDefsListForReading.Find(d => d.defName == "FellTrees");
     }
 
     internal AssortedTweaksSettings Settings
