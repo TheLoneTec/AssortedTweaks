@@ -54,7 +54,7 @@ namespace AssortedTweaks
                 return;
             foreach (var scr in srcIngredients)
             {
-                List<ThingDef> toRemove = destIngredients.Where(i => /*i.race != null &&*/ scr.defName == i.defName && scr.label == i.label).ToList();
+                List<ThingDef> toRemove = destIngredients.Where(i => /*i.race != null &&*/ scr.defName == i.defName && scr.label.CapitalizeFirst() == i.label.CapitalizeFirst()).ToList();
                 foreach (var item in toRemove)
                 {
                     destIngredients.Remove(item);
@@ -189,7 +189,7 @@ namespace AssortedTweaks
             for (int i = 0; i < __instance.ingredients.Count; i++)
             {
                 ThingDef thingDef = __instance.ingredients[i];
-                stringBuilder.Append((i == 0) ? thingDef.LabelCap.Resolve() : thingDef.label);
+                stringBuilder.Append(thingDef.LabelCap.Resolve());
                 string reason = "";
                 if (includeMergeCompatibility && __instance.Props.performMergeCompatibilityChecks)
                 {
