@@ -48,56 +48,28 @@ namespace AssortedTweaks
         new ArgumentType[] { ArgumentType.Normal, ArgumentType.Normal, ArgumentType.Out, ArgumentType.Normal })]
     public class MergeIngredients_Patch
     {
-        public static void Prefix(List<ThingDef> destIngredients, List<ThingDef> srcIngredients, bool lostImportantIngredients, ThingDef defToMake = null, List<ThingDef> __state = null)
+        public static void Prefix(List<ThingDef> destIngredients, List<ThingDef> srcIngredients, bool lostImportantIngredients, ThingDef defToMake = null)
         {
             if (!AssortedTweaksMod.instance.Settings.MeatIngredients)
                 return;
             foreach (var scr in srcIngredients)
             {
-                List<ThingDef> toRemove = destIngredients.Where(i => scr.defName == i.defName && scr.label.CapitalizeFirst() == i.label.CapitalizeFirst()).ToList();
+                List<ThingDef> toRemove = destIngredients.Where(i => /*i.race != null &&*/ scr.defName == i.defName && scr.label.CapitalizeFirst() == i.label.CapitalizeFirst()).ToList();
                 foreach (var item in toRemove)
                 {
                     destIngredients.Remove(item);
                 }
-            }
-            __state = destIngredients;
-        }
-
-        public static void Postfix(List<ThingDef> destIngredients, List<ThingDef> srcIngredients, bool lostImportantIngredients, ThingDef defToMake = null, List<ThingDef> __state = null)
-        {
-            if (!AssortedTweaksMod.instance.Settings.MeatIngredients)
-                return;
-
-            if (defToMake != null && lostImportantIngredients)
+            }/*
+            CompIngredients tmp = new CompIngredients();
+            tmp.ingredients = srcIngredients;
+            foreach (var item in tmp.ingredients)
             {
-                List<IngredientCount> missingIngredients = new List<IngredientCount>();
-                RecipeDef recipeDef = DefDatabase<RecipeDef>.AllDefs.FirstOrDefault((x => x.ProducedThingDef == defToMake));
-                if (recipeDef == null)
-                    return;
-                missingIngredients.AddRange(recipeDef.ingredients);
-                foreach (ThingDef destIngredient in destIngredients)
+                if (item.IsMeat || (item.ingestible != null && item.ingestible.sourceDef != null))
                 {
-                    ThingDef ing = destIngredient;
-                    IngredientCount ingredientCount = missingIngredients.FirstOrDefault((x => x.filter.Allows(ing)));
-                    if (ingredientCount != null)
-                    {
-                        missingIngredients.Remove(ingredientCount);
-                        if (!missingIngredients.Any())
-                            break;
-                    }
+                    CorrectIngredients.correctIngredients(ref tmp);
+                    srcIngredients = tmp.ingredients;
                 }
-                if (missingIngredients.Any())
-                {
-                    foreach (var ingredient in missingIngredients)
-                    {
-                        foreach (var thing in __state)
-                        {
-                            if (!ingredient.filter.Allows(thing))
-                                destIngredients.Add(thing);
-                        }
-                    }
-                }
-            }
+            }*/
         }
     }
 
