@@ -374,7 +374,7 @@ namespace AssortedTweaks
                     currentPawn = __result;
 
                     //Log.Message("Check is cannibal for: " + __result.def.defName);
-                    if ((currentPawn as Pawn).story != null && (currentPawn as Pawn).story.traits.HasTrait(TraitDefOf.Cannibal)
+                    if ((currentPawn as Pawn).story != null && (currentPawn as Pawn).story.traits.HasTrait(TraitDef.Named("Cannibal"))
                         || ModLister.IdeologyInstalled && (currentPawn as Pawn).Ideo != null && (currentPawn as Pawn).Ideo.HasHumanMeatEatingRequiredPrecept())
                     {
                         isCannible = true;
