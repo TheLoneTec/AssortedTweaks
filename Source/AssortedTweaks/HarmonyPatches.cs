@@ -445,6 +445,7 @@ namespace AssortedTweaks
                         }
                     }
                 }
+                return;
             }
         }
 
