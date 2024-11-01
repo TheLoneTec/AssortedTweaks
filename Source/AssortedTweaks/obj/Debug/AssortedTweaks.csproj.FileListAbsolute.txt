@@ -96,10 +96,6 @@ E:\Users\kacey\Documents\GitHub\PacasForks\AssortedTweaks\Source\AssortedTweaks\
 E:\Users\kacey\Documents\GitHub\PacasForks\AssortedTweaks\Source\AssortedTweaks\UnityEngine.UIModule.dll
 E:\Users\kacey\Documents\GitHub\PacasForks\AssortedTweaks\Source\AssortedTweaks\UnityEngine.Physics2DModule.dll
 E:\Users\kacey\Documents\GitHub\PacasForks\AssortedTweaks\Source\AssortedTweaks\UnityEngine.AnimationModule.dll
-E:\Users\kacey\Documents\GitHub\PacasForks\AssortedTweaks\Source\AssortedTweaks\Core_SK.dll
-E:\Users\kacey\Documents\GitHub\PacasForks\AssortedTweaks\Source\AssortedTweaks\ExpandedRoofing.dll
-E:\Users\kacey\Documents\GitHub\PacasForks\AssortedTweaks\Source\AssortedTweaks\LWM.DeepStorage.dll
-E:\Users\kacey\Documents\GitHub\PacasForks\AssortedTweaks\Source\AssortedTweaks\IHoldMultipleThings.dll
 E:\Users\kacey\Documents\GitHub\PacasForks\AssortedTweaks\Source\AssortedTweaks\WorkTab.dll
 E:\Users\kacey\Documents\GitHub\PacasForks\AssortedTweaks\Source\AssortedTweaks\FluffyUI.dll
 C:\Users\Andrei\AssortedTweaks\Source\AssortedTweaks\obj\Debug\AssortedTweaks.csproj.AssemblyReference.cache

@@ -18,6 +18,7 @@ using System.Security.Cryptography;
 using System.Text;
 using AssortedTweaks;
 using Mono.Cecil;
+using SK;
 
 namespace AssortedTweaks
 {
@@ -272,6 +273,41 @@ namespace AssortedTweaks
                 __result = ingester.Ideo.IsVeneratedAnimal(foodDef.ingestible.sourceDef);
                 return;
             }
+        }
+    }
+
+    [HarmonyPatch(typeof(WorkGiver_DoBill), "StartOrResumeBillJob")]
+    public class StartOrResumeBillJob_Patch
+    {
+        public static bool Prefix(ref Job __result, WorkGiver_DoBill __instance, Pawn pawn, IBillGiver giver, bool forced = false)
+        {
+            if (!AssortedTweaksMod.instance.Settings.MeatIngredients)
+                return true;
+
+            bool flag1 = FloatMenuMakerMap.makingFor == pawn;
+            if (flag1)
+            {
+                for (int index = 0; index < giver.BillStack.Count; ++index)
+                {
+                    Bill bill1 = giver.BillStack[index];
+
+                    if (bill1 is Bill_Medical billMedical)
+                    {
+                        foreach (var item in billMedical.uniqueRequiredIngredients)
+                        {
+                            CompIngredients comp = item.TryGetComp<CompIngredients>();
+                            if (item.HasThingCategory(ThingCategoryDefOfLocal.BodyPartsNatural) && comp != null && comp.ingredients.Where(d => d.defName != pawn.def.defName).EnumerableNullOrEmpty())
+                            {
+                                JobFailReason.Is((string)"ModIncompatibleWith".Translate(item.def.label.Translate()));
+                                __result = null;
+                                return false;
+                            }
+                        }
+                    }
+
+                }
+            }
+            return true;
         }
     }
 

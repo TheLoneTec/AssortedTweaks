@@ -7,6 +7,7 @@ namespace AssortedTweaks
     public static class ThingCategoryDefOfLocal
     {
         public static ThingCategoryDef Preserves;
+        public static ThingCategoryDef BodyPartsNatural;
 
         static ThingCategoryDefOfLocal()
         {
