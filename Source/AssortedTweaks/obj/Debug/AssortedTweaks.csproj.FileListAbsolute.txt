@@ -102,3 +102,11 @@ E:\Users\kacey\Documents\GitHub\PacasForks\AssortedTweaks\Source\AssortedTweaks\
 E:\Users\kacey\Documents\GitHub\PacasForks\AssortedTweaks\Source\AssortedTweaks\IHoldMultipleThings.dll
 E:\Users\kacey\Documents\GitHub\PacasForks\AssortedTweaks\Source\AssortedTweaks\WorkTab.dll
 E:\Users\kacey\Documents\GitHub\PacasForks\AssortedTweaks\Source\AssortedTweaks\FluffyUI.dll
+C:\Users\Andrei\AssortedTweaks\Source\AssortedTweaks\obj\Debug\AssortedTweaks.csproj.AssemblyReference.cache
+C:\Users\Andrei\AssortedTweaks\Source\AssortedTweaks\obj\Debug\AssortedTweaks.csproj.CoreCompileInputs.cache
+C:\Users\Andrei\AssortedTweaks\Source\AssortedTweaks\obj\Debug\AssortedTweaks.dll
+C:\Users\Andrei\AssortedTweaks\Source\AssortedTweaks\obj\Debug\AssortedTweaks.pdb
+C:\Users\Andrei\AssortedTweaks\Source\AssortedTweaks\obj\Debug\Assorted.49F85541.Up2Date
+C:\Users\Andrei\AssortedTweaks\Source\AssortedTweaks\AssortedTweaks.dll
+C:\Users\Andrei\AssortedTweaks\Source\AssortedTweaks\AssortedTweaks.pdb
+C:\Users\Andrei\AssortedTweaks\Source\AssortedTweaks\VersionFromManifest.dll
