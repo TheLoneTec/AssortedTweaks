@@ -347,7 +347,7 @@ namespace AssortedTweaks
 
     }
 
-    [HarmonyPatch(typeof(GenSpawn), "Spawn", new System.Type[] { typeof(Thing), typeof(IntVec3), typeof(Map), typeof(Rot4), typeof(WipeMode), typeof(bool) })]
+    [HarmonyPatch(typeof(GenSpawn), "Spawn", new System.Type[] { typeof(Thing), typeof(IntVec3), typeof(Map), typeof(Rot4), typeof(WipeMode), typeof(bool), typeof(bool)})]
     public class CorrectIngredients
     {
         //public static Dictionary<Faction, ThingDef> factionMainMeatSource = new Dictionary<Faction, ThingDef>();
@@ -357,7 +357,7 @@ namespace AssortedTweaks
         public static int recurring = 0;
         public static bool endOfSearch = false;
 
-        public static void Postfix(ref Thing __result, Thing newThing, IntVec3 loc, Map map, Rot4 rot, WipeMode wipeMode, bool respawningAfterLoad)
+        public static void Postfix(ref Thing __result, Thing newThing, IntVec3 loc, Map map, Rot4 rot, WipeMode wipeMode, bool respawningAfterLoad, bool forbidLeavings)
         {
             if (!AssortedTweaksMod.instance.Settings.MeatIngredients)
                 return;
@@ -374,7 +374,7 @@ namespace AssortedTweaks
                     currentPawn = __result;
 
                     //Log.Message("Check is cannibal for: " + __result.def.defName);
-                    if ((currentPawn as Pawn).story != null && (currentPawn as Pawn).story.traits.HasTrait(TraitDefOf.Cannibal)
+                    if ((currentPawn as Pawn).story != null && (currentPawn as Pawn).story.traits.HasTrait(TraitDef.Named("Cannibal"))
                         || ModLister.IdeologyInstalled && (currentPawn as Pawn).Ideo != null && (currentPawn as Pawn).Ideo.HasHumanMeatEatingRequiredPrecept())
                     {
                         isCannible = true;
