@@ -301,7 +301,7 @@ namespace AssortedTweaks
                         foreach (var item in billMedical.uniqueRequiredIngredients)
                         {
                             CompIngredients comp = item.TryGetComp<CompIngredients>();
-                            if (item.HasThingCategory(ThingCategoryDefOfLocal.BodyPartsNatural) && comp != null && comp.ingredients.Where(d => d.defName != pawn.def.defName).EnumerableNullOrEmpty())
+                            if (item.HasThingCategory(ThingCategoryDefOfLocal.BodyPartsNatural) && comp != null && !comp.ingredients.Where(d => d.defName == pawn.def.defName).EnumerableNullOrEmpty())
                             {
                                 JobFailReason.Is((string)"ModIncompatibleWith".Translate(item.def.label.Translate()));
                                 __result = null;
