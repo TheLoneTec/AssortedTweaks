@@ -276,14 +276,19 @@ namespace AssortedTweaks
         }
     }
 
+    /*
+     * Test to try and stop people using body parts from a difference race.
+     * 
+     */
     [HarmonyPatch(typeof(WorkGiver_DoBill), "StartOrResumeBillJob")]
     public class StartOrResumeBillJob_Patch
     {
         public static bool Prefix(ref Job __result, WorkGiver_DoBill __instance, Pawn pawn, IBillGiver giver, bool forced = false)
         {
-            if (!AssortedTweaksMod.instance.Settings.MeatIngredients)
+            if (!AssortedTweaksMod.instance.Settings.RaceBodyPartsMatter)
                 return true;
-
+            if (pawn == null || giver == null)
+                return true;
             bool flag1 = FloatMenuMakerMap.makingFor == pawn;
             if (flag1)
             {

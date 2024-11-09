@@ -44,6 +44,7 @@ namespace AssortedTweaks
         this.Settings.DefaultRadius = 999f;
       //listingStandard.Label((double)this.Settings.DefaultRadius >= 100.0 ? "AT.DefaultRadiusUnlimited".Translate() : "AT.DefaultRadius".Translate((NamedArgument) this.Settings.DefaultRadius.ToString("F0")), tooltip: ((string)"AT.DefaultRadiusTT".Translate()));
       listingStandard.CheckboxLabeled("AT.MeatIngredients_Label".Translate(), ref Settings.MeatIngredients, "AT.MeatIngredients_Tooltip".Translate());
+      listingStandard.CheckboxLabeled("AT.RaceBodyPartsMatter_Label".Translate(), ref Settings.RaceBodyPartsMatter, "AT.RaceBodyPartsMatter_Tooltip".Translate());
       listingStandard.CheckboxLabeled((string)Translator.Translate("CutPlantsBeforeBuilding"), ref Settings.CutPlantsBeforeBuilding);
       listingStandard.CheckboxLabeled((string)Translator.Translate("CoreSK_ShowTPSInRegularGame"), ref Settings.CoreSK_ShowTPSInRegularGame);
       listingStandard.CheckboxLabeled((string)Translator.Translate("CoreSK_ShowRaidPoints"), ref Settings.CoreSK_ShowRaidPoints);
