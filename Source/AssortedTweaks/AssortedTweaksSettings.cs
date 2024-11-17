@@ -7,6 +7,7 @@ namespace AssortedTweaks
     public float DefaultRadius = 30f;
     public bool MeatIngredients = true;
     public bool RaceBodyPartsMatter = false;
+    public bool DeliverAsMuchAsYouCan = true;
     public bool CoreSK_ShowTPSInRegularGame;
     public bool CoreSK_ShowRaidPoints = true;
     public int CoreSK_Max4Speed = 900;
@@ -24,6 +25,7 @@ namespace AssortedTweaks
         Scribe_Values.Look<float>(ref this.DefaultRadius, "DefaultRadius", 30f);
         Scribe_Values.Look<bool>(ref this.MeatIngredients, "MeatIngredients", true);
         Scribe_Values.Look<bool>(ref this.RaceBodyPartsMatter, "RaceBodyPartsMatter", false);
+        Scribe_Values.Look<bool>(ref this.DeliverAsMuchAsYouCan, "DeliverAsMuchAsYouCan", true);
         Scribe_Values.Look<bool>(ref this.CoreSK_ShowTPSInRegularGame, "CoreSK_ShowTPSInRegularGame");
         Scribe_Values.Look<bool>(ref this.CoreSK_ShowRaidPoints, "CoreSK_ShowRaidPoints", true);
         Scribe_Values.Look<int>(ref this.CoreSK_MaxRaidCount, "CoreSK_MaxRaidCount");
