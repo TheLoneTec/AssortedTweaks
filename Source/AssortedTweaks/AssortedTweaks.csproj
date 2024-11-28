@@ -32,33 +32,26 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony">
-      <HintPath>..\..\..\Hardcore-SK-Source\R1.4\Assemblies\0Harmony.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Lib.Harmony" Version="2.3.3" ExcludeAssets="runtime" />
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.5.*" />
+    <PackageReference Include="Krafs.Publicizer" Version="2.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="AlienRace">
-      <HintPath>..\..\..\Hardcore-SK-Source\R1.4\Assemblies\AlienRace.dll</HintPath>
-    </Reference>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\..\Hardcore-SK-Source\R1.4\Assemblies\Assembly-CSharp.dll</HintPath>
+      <HintPath>..\..\..\Hardcore-SK-Source\R1.5\Assemblies\AlienRace.dll</HintPath>
     </Reference>
     <Reference Include="Core_SK">
-      <HintPath>..\..\..\Hardcore-SK-Source\R1.4\Assemblies\Core_SK.dll</HintPath>
+      <HintPath>..\..\..\Hardcore-SK-Source\R1.5\Assemblies\Core_SK.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="UnityEngine.CoreModule">
-      <HintPath>..\..\..\Hardcore-SK-Source\R1.4\Assemblies\UnityEngine.CoreModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.IMGUIModule">
-      <HintPath>..\..\..\Hardcore-SK-Source\R1.4\Assemblies\UnityEngine.IMGUIModule.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\..\Hardcore-SK-Source\R1.4\Assemblies\UnityEngine.TextRenderingModule.dll</HintPath>
-    </Reference>
     <Reference Include="VersionFromManifest">
       <HintPath>lib\VersionFromManifest.dll</HintPath>
     </Reference>
     <Reference Include="WorkTab">
-      <HintPath>..\..\..\Hardcore-SK-Source\R1.4\Assemblies\WorkTab.dll</HintPath>
+      <HintPath>..\..\..\Hardcore-SK-Source\R1.5\Assemblies\WorkTab.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

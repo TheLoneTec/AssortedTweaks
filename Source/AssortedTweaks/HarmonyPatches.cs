@@ -225,14 +225,14 @@ namespace AssortedTweaks
 
             if (ingester == null)
             {
-                if (DebugSettings.godMode)
+                if (DebugSettings.godMode && AssortedTweaksMod.instance.Settings.ShowDebugMessages)
                     Log.Warning("Pawn is Null");
                 return;
             }
 
             if (ingester.RaceProps == null)
             {
-                if (DebugSettings.godMode)
+                if (DebugSettings.godMode && AssortedTweaksMod.instance.Settings.ShowDebugMessages)
                     Log.Warning(ingester.Name + "'s RaceProps is Null. Pawn with Invalid race.");
                 return;
             }
@@ -244,7 +244,7 @@ namespace AssortedTweaks
 
             if (foodDef == null)
             {
-                if (DebugSettings.godMode)
+                if (DebugSettings.godMode && AssortedTweaksMod.instance.Settings.ShowDebugMessages)
                     Log.Warning("foodDef is Null");
                 return;
             }
@@ -257,7 +257,7 @@ namespace AssortedTweaks
 
             if (ingester.def == null)
             {
-                if (DebugSettings.godMode)
+                if (DebugSettings.godMode && AssortedTweaksMod.instance.Settings.ShowDebugMessages)
                     Log.Warning(ingester.Name + "'s def is Null");
                 return;
             }
@@ -420,7 +420,7 @@ namespace AssortedTweaks
                     {
                         isCannible = true;
                     }
-                    if (DebugSettings.godMode)
+                    if (DebugSettings.godMode && AssortedTweaksMod.instance.Settings.ShowDebugMessages)
                         Log.Message("CorrectedIngredients Entered for : " + __result.def.defName);
                     //if (pawn.Faction != null && !factionMainMeatSource.ContainsKey(pawn.Faction))
                     //    factionMainMeatSource.Add(pawn.Faction, null);
@@ -472,7 +472,7 @@ namespace AssortedTweaks
             } catch (Exception e)
             {
                 Log.Warning("Assorted Tweaks Encountered an Error (enable godMode for more info):" + e.Message + " caused by " + e.Source + Environment.NewLine + e.StackTrace);
-                if (DebugSettings.godMode && __result != null & __result.TryGetComp<CompIngredients>() != null)
+                if (DebugSettings.godMode && AssortedTweaksMod.instance.Settings.ShowDebugMessages && __result != null & __result.TryGetComp<CompIngredients>() != null)
                 {
                     foreach (var item in __result.TryGetComp<CompIngredients>().ingredients)
                     {
@@ -499,12 +499,12 @@ namespace AssortedTweaks
 
                 if (!comp.ingredients.NullOrEmpty())
                 {
-                    if (DebugSettings.godMode)  
+                    if (DebugSettings.godMode && AssortedTweaksMod.instance.Settings.ShowDebugMessages)  
                         Log.Message("Has Ingredient Comp: " + comp.parent.def.defName + " and isnt a meal");
                     foreach (var item in comp.ingredients.Where(i => i.race != null))
                     {
                         ThingDef newIngredient = null;
-                        if (DebugSettings.godMode)
+                        if (DebugSettings.godMode && AssortedTweaksMod.instance.Settings.ShowDebugMessages)
                         {
                             Log.Message("ingredient is: " + item.defName);
                             Log.Message("category is: " + item.category);
@@ -700,7 +700,7 @@ namespace AssortedTweaks
 
             //Log.Message("Checking " + food.defName);
 
-            if (DebugSettings.godMode)
+            if (DebugSettings.godMode && AssortedTweaksMod.instance.Settings.ShowDebugMessages)
             {
                 Log.Message("Generate Ingredients Debug: food is " + (food != null ? food.defName : " Null."));
                 Log.Message("location is: " +(loc != null ? loc.ToString() :"Null"));
@@ -712,7 +712,7 @@ namespace AssortedTweaks
 
             if (food.thingCategories != null && !food.thingCategories.Where(b => b.defName == "BodyPartsNatural").EnumerableNullOrEmpty())
             {
-                if (DebugSettings.godMode)
+                if (DebugSettings.godMode && AssortedTweaksMod.instance.Settings.ShowDebugMessages)
                     Log.Message("Found Natural BodyPart");
                 Pawn pawn = null;
                 ThingDef pawnDef = null;
@@ -751,15 +751,15 @@ namespace AssortedTweaks
                 }
                 else
                 {
-                    if (DebugSettings.godMode)
+                    if (DebugSettings.godMode && AssortedTweaksMod.instance.Settings.ShowDebugMessages)
                         Log.Message("No Pawn Found");
                     ThingDef human = DefDatabase<ThingDef>.AllDefsListForReading.Find(x => x.defName == "Human");
-                    if (human == null && DebugSettings.godMode)
+                    if (human == null && DebugSettings.godMode && AssortedTweaksMod.instance.Settings.ShowDebugMessages)
                         Log.Message("Could Find Human Meat");
                     ThingDef meat = ConvertMeatToRandomRace(human.race.meatDef);
                     if (meat != null)
                     {
-                        if (DebugSettings.godMode)
+                        if (DebugSettings.godMode && AssortedTweaksMod.instance.Settings.ShowDebugMessages)
                         {
                             if (meat.IsIngestible && meat.ingestible.sourceDef != null)
                             {
@@ -774,7 +774,7 @@ namespace AssortedTweaks
                     }
                     else
                     {
-                        if (DebugSettings.godMode)
+                        if (DebugSettings.godMode && AssortedTweaksMod.instance.Settings.ShowDebugMessages)
                         {
                             Log.Message("couldnt find random meat");
                         }
@@ -785,7 +785,7 @@ namespace AssortedTweaks
 
             foreach (var item in GetPossibleIngredients(food))
             {
-                if (DebugSettings.godMode)
+                if (DebugSettings.godMode && AssortedTweaksMod.instance.Settings.ShowDebugMessages)
                     Log.Message("Checking Possible Ingredients");
                 //string race = "None";
                 //if (item.IsIngestible && item.ingestible.sourceDef != null)
@@ -833,7 +833,7 @@ namespace AssortedTweaks
 
         public static ThingDef ConvertMeatToRandomRace(ThingDef meat)
         {
-            if (DebugSettings.godMode)
+            if (DebugSettings.godMode && AssortedTweaksMod.instance.Settings.ShowDebugMessages)
                 Log.Message("Trying to convert: " + (meat.defName != null ? meat.defName : "Null"));
             if (meat.IsIngestible && meat.ingestible.sourceDef != null)
             {
@@ -885,7 +885,7 @@ namespace AssortedTweaks
             List<ThingDef> possibleIngredients = new List<ThingDef>();
             List<RecipeDef> recipes = DefDatabase<RecipeDef>.AllDefs.Where(recipe1 => recipe1.products.Any(i => i.thingDef.IsIngestible) && !recipe1.defName.Contains("Glycerol")).ToList();
 
-            if (DebugSettings.godMode)
+            if (DebugSettings.godMode && AssortedTweaksMod.instance.Settings.ShowDebugMessages)
                 Log.Message("Looking for Recipes for " + food.defName);
             RecipeDef matchingRecipe = recipes.Where(recipe2 => !recipe2.products.Where(p => p.thingDef.defName == food.defName).EnumerableNullOrEmpty()).RandomElementWithFallback();
 

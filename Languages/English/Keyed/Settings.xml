@@ -21,6 +21,9 @@
 	<CoreSK_Max4Speed>Max speed limit(900 = default)</CoreSK_Max4Speed>
 	<ReplaceStuff_CornerBuildable>Corner tiles are buildable and mineable from inside</ReplaceStuff_CornerBuildable>
 
+	<AT.ShowDebugMessages_Label>Show Debug Messages when GodMode Enabled</AT.ShowDebugMessages_Label>
+	<AT.ShowDebugMessages_Tooltip>If enabled, certain debug message will show in the log if God Mode is enabled.</AT.ShowDebugMessages_Tooltip>
+
 	<AT_Credits>Part of the tweaks taken from: ShareTheLoad, ReplaceStuff</AT_Credits>
 
 </LanguageData>

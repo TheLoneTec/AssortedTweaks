@@ -61,7 +61,8 @@ namespace AssortedTweaks
           listingStandard.TextFieldNumericLabeled<int>("DEBUG: Override raid points value", ref Settings.OverrideRadePointsValue, ref Settings._bufferOverrideRadePointsValue);
           listingStandard.GapLine();
       }
-      GUI.color = Color.cyan;
+        listingStandard.CheckboxLabeled("AT.ShowDebugMessages_Label".Translate(), ref Settings.ShowDebugMessages, "AT.ShowDebugMessages_Tooltip".Translate());
+        GUI.color = Color.cyan;
       listingStandard.Label(Translator.Translate("AT_Credits"));
       GUI.color = Color.white;
       if (AssortedTweaksMod.currentVersion != null)

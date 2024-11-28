@@ -15,6 +15,7 @@ namespace AssortedTweaks
     public bool OverrideRadePoints;
     public int OverrideRadePointsValue = 10000;
     public bool CutPlantsBeforeBuilding = true;
+    public bool ShowDebugMessages = false;
     public string _bufferMaxRaidCount;
     public string _bufferMax4Speed;
     public string _bufferOverrideRadePointsValue;
@@ -30,7 +31,7 @@ namespace AssortedTweaks
         Scribe_Values.Look<int>(ref this.CoreSK_Max4Speed, "CoreSK_Max4Speed", 900);
         Scribe_Values.Look<bool>(ref this.ReplaceStuff_CornerBuildable, "ReplaceStuff_CornerBuildable", true);
         Scribe_Values.Look<bool>(ref this.CutPlantsBeforeBuilding, "CutPlantsBeforeBuilding", true);
-
+        Scribe_Values.Look<bool>(ref this.ShowDebugMessages, "CutPlantsBeforeBuilding", false);
     }
   }
 }
