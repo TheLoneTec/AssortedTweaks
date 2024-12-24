@@ -59,6 +59,7 @@
     <Compile Include="CoreSK_Utils.cs" />
     <Compile Include="CornerBuildable.cs" />
     <Compile Include="CornerMineableOkay.cs" />
+    <Compile Include="DeliverAsMuchAsPossible.cs" />
     <Compile Include="HandleBlockingPlants.cs" />
     <Compile Include="ModActive.cs" />
     <Compile Include="FoodUtilities.cs" />
