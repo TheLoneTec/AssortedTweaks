@@ -39,12 +39,6 @@ namespace AssortedTweaks
                 h.Patch((MethodBase)original2, postfix: new HarmonyMethod(typeof(CoreSK_Max4Speed), "Postfix"));
             stringBuilder.Append("CoreSK ");
         }
-        if (!ModActive.ShareTheLoad)
-        {
-            h.Patch((MethodBase)AccessTools.Method(typeof(ItemAvailability), "ThingsAvailableAnywhere"), new HarmonyMethod(typeof(DeliverAsMuchAsPossible), "Prefix"));
-            h.Patch((MethodBase)AccessTools.Method(typeof(WorkGiver_ConstructDeliverResources), "ResourceDeliverJobFor"), transpiler: new HarmonyMethod(typeof(BreakToContinue_Patch), "Transpiler"));
-            stringBuilder.Append("ShareTheLoad ");
-        }
         if (!ModActive.ReplaceStuff)
         {
             h.Patch((MethodBase)AccessTools.Method(typeof(TouchPathEndModeUtility), "IsCornerTouchAllowed"), new HarmonyMethod(typeof(CornerBuildable), "Prefix"));
