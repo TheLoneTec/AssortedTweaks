@@ -474,13 +474,16 @@ namespace AssortedTweaks
                 Log.Warning("Assorted Tweaks Encountered an Error (enable \"Show Debug Messages\" in mod options and godMode for more info):" + e.Message + " found at " + e.Source + Environment.NewLine + e.StackTrace);
                 if (DebugSettings.godMode && AssortedTweaksMod.instance.Settings.ShowDebugMessages && __result != null & __result.TryGetComp<CompIngredients>() != null)
                 {
-                    if (__result != null)
-                        Log.Message("Item is: " + (__result.def.defName != null ? __result.def.defName : "Null") + ". Location: " + (__result.PositionHeld != null ? __result.PositionHeld.ToString() : "Null"));
+                    if (__result != null && __result.def != null)
+                        Log.Message("Item is: " + 
+                            (__result.def.defName != null ? __result.def.defName : "Null") + ". Location: " + 
+                            (__result.PositionHeld != null ? __result.PositionHeld.ToString() : "Null") +
+                            (__result.def.modContentPack != null ? __result.def.modContentPack.Name : "Null"));
                     foreach (var item in __result.TryGetComp<CompIngredients>().ingredients)
                     {
                         if (item != null)
                         {
-                            Log.Message("Ingredient: " + item.defName);
+                            Log.Message("Ingredient: " + item.defName + ". From Mod: " + (__result.def.modContentPack != null ? __result.def.modContentPack.Name : "Null"));
                         }
                         else
                         {
