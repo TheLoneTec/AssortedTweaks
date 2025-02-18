@@ -471,9 +471,11 @@ namespace AssortedTweaks
                 isCannible = false;
             } catch (Exception e)
             {
-                Log.Warning("Assorted Tweaks Encountered an Error (enable godMode for more info):" + e.Message + " caused by " + e.Source + Environment.NewLine + e.StackTrace);
+                Log.Warning("Assorted Tweaks Encountered an Error (enable \"Show Debug Messages\" in mod options and godMode for more info):" + e.Message + " found at " + e.Source + Environment.NewLine + e.StackTrace);
                 if (DebugSettings.godMode && AssortedTweaksMod.instance.Settings.ShowDebugMessages && __result != null & __result.TryGetComp<CompIngredients>() != null)
                 {
+                    if (__result != null)
+                        Log.Message("Item is: " + (__result.def.defName != null ? __result.def.defName : "Null") + ". Location: " + (__result.PositionHeld != null ? __result.PositionHeld.ToString() : "Null"));
                     foreach (var item in __result.TryGetComp<CompIngredients>().ingredients)
                     {
                         if (item != null)
