@@ -760,7 +760,7 @@ namespace AssortedTweaks
                         Log.Message("No Pawn Found");
                     ThingDef human = DefDatabase<ThingDef>.AllDefsListForReading.Find(x => x.defName == "Human");
                     if (human == null && DebugSettings.godMode && AssortedTweaksMod.instance.Settings.ShowDebugMessages)
-                        Log.Message("Could Find Human Meat");
+                        Log.Message("Couldnt Find Human Meat");
                     ThingDef meat = ConvertMeatToRandomRace(human.race.meatDef);
                     if (meat != null)
                     {
