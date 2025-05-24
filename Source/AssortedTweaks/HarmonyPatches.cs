@@ -1242,7 +1242,7 @@ namespace AssortedTweaks
                 return true;
 
             if (!AssortedTweaksMod.instance.Settings.DeliverAsMuchAsYouCan)
-                return true;
+                return __result;
 
             var isAvailable = ___map.listerThings.ThingsOfDef(need).Any(t => !t.IsForbidden(pawn));
             var key = Gen.HashCombine(need.GetHashCode(), pawn.Faction);
