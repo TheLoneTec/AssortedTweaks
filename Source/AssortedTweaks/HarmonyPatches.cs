@@ -19,6 +19,7 @@ using System.Text;
 using AssortedTweaks;
 using Mono.Cecil;
 using SK;
+using System.Reflection.Emit;
 
 namespace AssortedTweaks
 {
@@ -45,34 +46,7 @@ namespace AssortedTweaks
         }
     }*/
 
-    [HarmonyPatch(typeof(CompIngredients), "MergeIngredients", new System.Type[] { typeof(List<ThingDef>), typeof(List<ThingDef>), typeof(bool), typeof(ThingDef) },
-        new ArgumentType[] { ArgumentType.Normal, ArgumentType.Normal, ArgumentType.Out, ArgumentType.Normal })]
-    public class MergeIngredients_Patch
-    {
-        public static void Prefix(List<ThingDef> destIngredients, List<ThingDef> srcIngredients, bool lostImportantIngredients, ThingDef defToMake = null)
-        {
-            if (!AssortedTweaksMod.instance.Settings.MeatIngredients)
-                return;
-            foreach (var scr in srcIngredients)
-            {
-                List<ThingDef> toRemove = destIngredients.Where(i => /*i.race != null &&*/ scr.defName == i.defName && scr.label.CapitalizeFirst() == i.label.CapitalizeFirst()).ToList();
-                foreach (var item in toRemove)
-                {
-                    destIngredients.Remove(item);
-                }
-            }/*
-            CompIngredients tmp = new CompIngredients();
-            tmp.ingredients = srcIngredients;
-            foreach (var item in tmp.ingredients)
-            {
-                if (item.IsMeat || (item.ingestible != null && item.ingestible.sourceDef != null))
-                {
-                    CorrectIngredients.correctIngredients(ref tmp);
-                    srcIngredients = tmp.ingredients;
-                }
-            }*/
-        }
-    }
+    #region Stacking & Strings
 
     [HarmonyPatch(typeof(CompIngredients), "AllowStackWith", new System.Type[] { typeof(Thing) },
         new ArgumentType[] { ArgumentType.Normal })]
@@ -176,6 +150,39 @@ namespace AssortedTweaks
             }
 
             return "MealKindAny".Translate().Colorize(Color.white);
+        }
+    }
+
+    #endregion
+
+    #region Meat Ingredients
+
+    [HarmonyPatch(typeof(CompIngredients), "MergeIngredients", new System.Type[] { typeof(List<ThingDef>), typeof(List<ThingDef>), typeof(bool), typeof(ThingDef) },
+        new ArgumentType[] { ArgumentType.Normal, ArgumentType.Normal, ArgumentType.Out, ArgumentType.Normal })]
+    public class MergeIngredients_Patch
+    {
+        public static void Prefix(List<ThingDef> destIngredients, List<ThingDef> srcIngredients, bool lostImportantIngredients, ThingDef defToMake = null)
+        {
+            if (!AssortedTweaksMod.instance.Settings.MeatIngredients)
+                return;
+            foreach (var scr in srcIngredients)
+            {
+                List<ThingDef> toRemove = destIngredients.Where(i => /*i.race != null &&*/ scr.defName == i.defName && scr.label.CapitalizeFirst() == i.label.CapitalizeFirst()).ToList();
+                foreach (var item in toRemove)
+                {
+                    destIngredients.Remove(item);
+                }
+            }/*
+            CompIngredients tmp = new CompIngredients();
+            tmp.ingredients = srcIngredients;
+            foreach (var item in tmp.ingredients)
+            {
+                if (item.IsMeat || (item.ingestible != null && item.ingestible.sourceDef != null))
+                {
+                    CorrectIngredients.correctIngredients(ref tmp);
+                    srcIngredients = tmp.ingredients;
+                }
+            }*/
         }
     }
 
@@ -285,7 +292,7 @@ namespace AssortedTweaks
     {
         public static bool Prefix(ref Job __result, WorkGiver_DoBill __instance, Pawn pawn, IBillGiver giver, bool forced = false)
         {
-            if (!AssortedTweaksMod.instance.Settings.RaceBodyPartsMatter)
+            if (!AssortedTweaksMod.instance.Settings.RaceBodyPartsMatter || !AssortedTweaksMod.instance.Settings.MeatIngredients)
                 return true;
             if (pawn == null || giver == null)
                 return true;
@@ -549,7 +556,7 @@ namespace AssortedTweaks
                 }
 
 
-                #region
+                #region Old Code
                 /*
                 else
                 {
@@ -1188,6 +1195,9 @@ namespace AssortedTweaks
         }
     }
 
+    #endregion
+
+    #region Always show training ui
     /*
      * vanilla ui code is broken atm, unless visible is set to true, the rect gets created as a blank if a trainability is disabled.
      * but the height of the window isnt adjusted to account for this, so it ends up not being visible as its below a blank row.
@@ -1202,6 +1212,10 @@ namespace AssortedTweaks
         }
     }
 
+    #endregion
+
+    #region Raid Points Max
+
     [HarmonyPatch(typeof(DebugActionsUtility), "PointsOptions")]
     public class MoreDevRaidpoints
     {
@@ -1214,6 +1228,72 @@ namespace AssortedTweaks
             __result = (IEnumerable<float>)list;
         }
     }
+
+    #endregion
+
+    #region DeliverAsMuchAsYouCan
+
+    [HarmonyPatch(typeof(ItemAvailability), nameof(ItemAvailability.ThingsAvailableAnywhere))]
+    public static class ItemAvailability_Patch
+    {
+        public static bool Postfix(bool __result, ref Dictionary<int, bool> ___cachedResults, ref Map ___map, ThingDef need, int amount, Pawn pawn)
+        {
+            if (__result)
+                return true;
+
+            if (!AssortedTweaksMod.instance.Settings.DeliverAsMuchAsYouCan)
+                return true;
+
+            var isAvailable = ___map.listerThings.ThingsOfDef(need).Any(t => !t.IsForbidden(pawn));
+            var key = Gen.HashCombine(need.GetHashCode(), pawn.Faction);
+            ___cachedResults[key] = isAvailable;
+
+            return isAvailable;
+        }
+    }
+
+    [HarmonyPatch(typeof(WorkGiver_ConstructDeliverResources), "ResourceDeliverJobFor", new Type[] { typeof(Pawn), typeof(IConstructible), typeof(bool), typeof(bool) })]
+    public static class WorkGiver_ConstructDeliverResources_Patch
+    {
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+        {
+            if (!AssortedTweaksMod.instance.Settings.DeliverAsMuchAsYouCan)
+                return instructions;
+
+            var cm = new CodeMatcher(instructions);
+
+            cm.Start();
+            while (cm.IsValid)
+            {
+                /* 
+                 * if (FloatMenuMakerMap.makingFor != pawn)
+                 * {
+                 *   break;
+                 * }
+                 */
+                cm.MatchEndForward(
+                    new CodeMatch(OpCodes.Ldsfld),
+                    new CodeMatch(OpCodes.Ldloc_3),
+                    new CodeMatch(OpCodes.Ldfld),
+                    new CodeMatch(OpCodes.Ldfld),
+                    new CodeMatch(OpCodes.Beq),
+                    new CodeMatch(OpCodes.Leave)
+                );
+
+                if (!cm.IsValid)
+                    break;
+
+                cm.Advance(-1);
+                cm.Opcode = OpCodes.Br;
+            }
+
+            return cm.InstructionEnumeration();
+        }
+    }
+
+    #endregion
+
+    #region Old performance improvement for HAR
 
     /*
      * Grab tweakValues
@@ -1439,5 +1519,5 @@ namespace AssortedTweaks
        }
        
     }*/
-
+    #endregion
 }

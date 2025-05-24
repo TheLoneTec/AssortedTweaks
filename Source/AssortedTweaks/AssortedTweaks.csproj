@@ -46,7 +46,6 @@
     <Reference Include="Core_SK">
       <HintPath>..\..\..\Hardcore-SK-Source\R1.5\Assemblies\Core_SK.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
     <Reference Include="VersionFromManifest">
       <HintPath>lib\VersionFromManifest.dll</HintPath>
     </Reference>
