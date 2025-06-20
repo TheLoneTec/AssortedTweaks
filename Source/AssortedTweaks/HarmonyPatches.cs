@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using RimWorld;
 using System.Collections.Generic;
 using System;
@@ -1206,7 +1206,7 @@ namespace AssortedTweaks
     [HarmonyPatch(typeof(Pawn_TrainingTracker), "CanAssignToTrain",new System.Type[] { typeof(TrainableDef), typeof(bool) }, new ArgumentType[] { ArgumentType.Normal, ArgumentType.Out })]
     public class CanAssignToTrain_Patch
     {
-        public static void Postfix(ref AcceptanceReport __result, ref Pawn_TrainingTracker __instance, TrainableDef td,out bool visible)
+        public static void Postfix(TrainableDef td,out bool visible)
         {
             visible = true;
         }
