@@ -731,6 +731,12 @@ namespace AssortedTweaks
                 if (loc != null && map != null)
                 {
                     Pawn pawnFound = loc.GetFirstPawn(map);
+                    if (pawnFound.CurJob == null)
+                    {
+                        if (DebugSettings.godMode && AssortedTweaksMod.instance.Settings.ShowDebugMessages)
+                            Log.Message("No Pawn Job Found");
+                        return;
+                    }
                     if (pawnFound != null && pawnFound.CurJob.def.defName == "DoBill" && pawnFound.CurJob.workGiverDef.defName == "DoBillsMedicalHumanOperation")
                     {
                         //Log.Message("targetA is: " + pawnFound.CurJob.targetA);
