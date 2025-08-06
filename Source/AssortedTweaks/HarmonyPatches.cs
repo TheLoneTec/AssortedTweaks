@@ -731,32 +731,32 @@ namespace AssortedTweaks
                 if (loc != null && map != null)
                 {
                     Pawn pawnFound = loc.GetFirstPawn(map);
-                    if (pawnFound.CurJob == null)
+                    if (pawnFound.CurJob != null)
                     {
-                        if (DebugSettings.godMode && AssortedTweaksMod.instance.Settings.ShowDebugMessages)
-                            Log.Message("No Pawn Job Found");
-                        return;
-                    }
-                    if (pawnFound != null && pawnFound.CurJob.def.defName == "DoBill" && pawnFound.CurJob.workGiverDef.defName == "DoBillsMedicalHumanOperation")
-                    {
-                        //Log.Message("targetA is: " + pawnFound.CurJob.targetA);
-                        pawn = (pawnFound.CurJob.targetA.Pawn);
-                    }
-                    else
-                    {
-                        CellRect rect = CellRect.CenteredOn(loc, 1);
-                        foreach (var pos in rect)
+                        if (pawnFound != null && pawnFound.CurJob.def.defName == "DoBill" && pawnFound.CurJob.workGiverDef.defName == "DoBillsMedicalHumanOperation")
                         {
-                            Pawn pawnFound2 = pos.GetFirstPawn(map);
-                            if (pawnFound2 != null && pawnFound2.CurJob.def.defName == "DoBill" && pawnFound2.CurJob.workGiverDef.defName == "DoBillsMedicalHumanOperation")
+                            //Log.Message("targetA is: " + pawnFound.CurJob.targetA);
+                            pawn = (pawnFound.CurJob.targetA.Pawn);
+                        }
+                        else
+                        {
+                            CellRect rect = CellRect.CenteredOn(loc, 1);
+                            foreach (var pos in rect)
                             {
-                                //Log.Message("targetA is: " + pawnFound2.CurJob.targetA);
-                                pawn = (pawnFound2.CurJob.targetA.Pawn);
+                                Pawn pawnFound2 = pos.GetFirstPawn(map);
+                                if (pawnFound2 != null && pawnFound2.CurJob.def.defName == "DoBill" && pawnFound2.CurJob.workGiverDef.defName == "DoBillsMedicalHumanOperation")
+                                {
+                                    //Log.Message("targetA is: " + pawnFound2.CurJob.targetA);
+                                    pawn = (pawnFound2.CurJob.targetA.Pawn);
+                                }
                             }
                         }
+                        if (pawn != null)
+                            pawnDef = pawn.def;
                     }
-                    if (pawn != null)
-                        pawnDef = pawn.def;
+                    else if (DebugSettings.godMode && AssortedTweaksMod.instance.Settings.ShowDebugMessages)
+                        Log.Message("No Pawn Job Found");
+
                 }
 
                 if (pawnDef != null)
