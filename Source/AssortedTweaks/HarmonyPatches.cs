@@ -1203,23 +1203,6 @@ namespace AssortedTweaks
 
     #endregion
 
-    #region Always show training ui
-    /*
-     * vanilla ui code is broken atm, unless visible is set to true, the rect gets created as a blank if a trainability is disabled.
-     * but the height of the window isnt adjusted to account for this, so it ends up not being visible as its below a blank row.
-     */
-
-    [HarmonyPatch(typeof(Pawn_TrainingTracker), "CanAssignToTrain",new System.Type[] { typeof(TrainableDef), typeof(bool) }, new ArgumentType[] { ArgumentType.Normal, ArgumentType.Out })]
-    public class CanAssignToTrain_Patch
-    {
-        public static void Postfix(TrainableDef td,out bool visible)
-        {
-            visible = true;
-        }
-    }
-
-    #endregion
-
     #region Raid Points Max
 
     [HarmonyPatch(typeof(DebugActionsUtility), "PointsOptions")]
