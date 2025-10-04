@@ -58,8 +58,6 @@
   <ItemGroup>
     <Compile Include="CoreSK_Max4Speed.cs" />
     <Compile Include="CoreSK_Utils.cs" />
-    <Compile Include="CornerBuildable.cs" />
-    <Compile Include="CornerMineableOkay.cs" />
     <Compile Include="HandleBlockingPlants.cs" />
     <Compile Include="ModActive.cs" />
     <Compile Include="FoodUtilities.cs" />
@@ -67,7 +65,6 @@
     <Compile Include="DebugWindowsOpener_DevToolStarterOnGUI_Patch.cs" />
     <Compile Include="KeyBindingDefOf.cs" />
     <Compile Include="OverrideRadePoints.cs" />
-    <Compile Include="ShouldNotEnterCellPatch.cs" />
     <Compile Include="ThingCategoryDefOf.cs" />
     <Compile Include="HarmonyPatches.cs" />
     <Compile Include="AssortedTweaks.cs" />
@@ -76,7 +73,6 @@
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="TPSNew.cs" />
     <Compile Include="TPSPatch.cs" />
-    <Compile Include="TryFindSpotToPlaceHaulableCloseToPatch.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

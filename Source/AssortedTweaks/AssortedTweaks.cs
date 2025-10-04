@@ -39,16 +39,8 @@ namespace AssortedTweaks
                 h.Patch((MethodBase)original2, postfix: new HarmonyMethod(typeof(CoreSK_Max4Speed), "Postfix"));
             stringBuilder.Append("CoreSK ");
         }
-        if (!ModActive.ReplaceStuff)
-        {
-            h.Patch((MethodBase)AccessTools.Method(typeof(TouchPathEndModeUtility), "IsCornerTouchAllowed"), new HarmonyMethod(typeof(CornerBuildable), "Prefix"));
-            h.Patch((MethodBase)AccessTools.Method(typeof(TouchPathEndModeUtility), "MakesOccupiedCellsAlwaysReachableDiagonally"), new HarmonyMethod(typeof(CornerMineableOkay), "Prefix"));
-            h.Patch((MethodBase)AccessTools.Method(typeof(GenPath), "ShouldNotEnterCell"), postfix: new HarmonyMethod(typeof(ShouldNotEnterCellPatch), "Postfix"));
-            h.Patch((MethodBase)AccessTools.Method(typeof(HaulAIUtility), "TryFindSpotToPlaceHaulableCloseTo"), postfix: new HarmonyMethod(typeof(TryFindSpotToPlaceHaulableCloseToPatch), "Postfix"));
-            stringBuilder.Append("ReplaceStuff ");
-        }
 
-        }
+    }
 
   }
 }

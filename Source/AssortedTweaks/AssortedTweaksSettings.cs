@@ -12,7 +12,6 @@ namespace AssortedTweaks
     public bool CoreSK_ShowRaidPoints = true;
     public int CoreSK_Max4Speed = 900;
     public int CoreSK_MaxRaidCount = 130;
-    public bool ReplaceStuff_CornerBuildable = false;
     public bool OverrideRadePoints;
     public int OverrideRadePointsValue = 10000;
     public bool CutPlantsBeforeBuilding = true;
@@ -31,7 +30,6 @@ namespace AssortedTweaks
         Scribe_Values.Look<bool>(ref this.CoreSK_ShowRaidPoints, "CoreSK_ShowRaidPoints", true);
         Scribe_Values.Look<int>(ref this.CoreSK_MaxRaidCount, "CoreSK_MaxRaidCount");
         Scribe_Values.Look<int>(ref this.CoreSK_Max4Speed, "CoreSK_Max4Speed", 900);
-        Scribe_Values.Look<bool>(ref this.ReplaceStuff_CornerBuildable, "ReplaceStuff_CornerBuildable", false);
         Scribe_Values.Look<bool>(ref this.CutPlantsBeforeBuilding, "CutPlantsBeforeBuilding", true);
         Scribe_Values.Look<bool>(ref this.ShowDebugMessages, "CutPlantsBeforeBuilding", false);
     }

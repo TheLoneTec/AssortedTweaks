@@ -25,16 +25,6 @@ namespace AssortedTweaks
             }
         }
 
-        public static bool ReplaceStuff
-        {
-            get
-            {
-                if (!ModActive._replaceStuff.HasValue)
-                    ModActive._replaceStuff = new bool?(LoadedModManager.RunningModsListForReading.Any<ModContentPack>((Predicate<ModContentPack>)(x => x.PackageId.Equals("Uuugggg.ReplaceStuff", StringComparison.CurrentCultureIgnoreCase) || x.PackageId.Equals("DEBUuugggg.ReplaceStuff", StringComparison.CurrentCultureIgnoreCase))));
-                return ModActive._replaceStuff.Value;
-            }
-        }
-
         public static bool CoreSK
         {
             get

@@ -51,8 +51,6 @@ namespace AssortedTweaks
       listingStandard.CheckboxLabeled((string)Translator.Translate("CoreSK_ShowRaidPoints"), ref Settings.CoreSK_ShowRaidPoints);
       int coreSkMaxRaidCount = Settings.CoreSK_MaxRaidCount;
       listingStandard.TextFieldNumericLabeled<int>((string)Translator.Translate("CoreSK_MaxRaidCount"), ref Settings.CoreSK_MaxRaidCount, ref Settings._bufferMaxRaidCount);
-      if (!ModActive.ReplaceStuff)
-          listingStandard.CheckboxLabeled((string)Translator.Translate("ReplaceStuff_CornerBuildable"), ref Settings.ReplaceStuff_CornerBuildable);
       if (Settings.CoreSK_MaxRaidCount != coreSkMaxRaidCount && Settings.CoreSK_MaxRaidCount > 10)
           CoreSK_Utils.Set_Config_MaxRaidCount(Settings.CoreSK_MaxRaidCount);
       listingStandard.TextFieldNumericLabeled<int>((string)Translator.Translate("CoreSK_Max4Speed"), ref Settings.CoreSK_Max4Speed, ref Settings._bufferMax4Speed);
