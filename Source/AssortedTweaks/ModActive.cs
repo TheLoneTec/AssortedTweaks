@@ -12,7 +12,6 @@ namespace AssortedTweaks
     public class ModActive
     {
         private static bool? _shareTheLoad;
-        private static bool? _replaceStuff;
         private static bool? _coreSk;
 
         public static bool ShareTheLoad
