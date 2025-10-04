@@ -1083,7 +1083,7 @@ namespace AssortedTweaks
                     }
                     else
                     {
-                        randomIngredient = item.filter.AllowedThingDefs.Where(i => i.IsIngestible && i.IsRawFood() && i.ingestible.JoyKind != null
+                        randomIngredient = item.filter.AllowedThingDefs.Where(i => i.IsIngestible && i.IsRawHumanFood() && i.ingestible.JoyKind != null
                             && i.ingestible.JoyKind.defName != "Chemical" && !i.defName.Contains("Glycerol")).RandomElementWithFallback();
                         //Log.Message("randomIngredient Assigned: " + (randomIngredient != null ? randomIngredient.defName : "Is Null"));
                         //Log.Message("randomIngredient is null");
