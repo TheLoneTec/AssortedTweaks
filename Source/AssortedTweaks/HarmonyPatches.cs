@@ -419,6 +419,8 @@ namespace AssortedTweaks
 
                 if (__result is Pawn pawn)
                 {
+                    if (DebugSettings.godMode && AssortedTweaksMod.instance.Settings.ShowDebugMessages)
+                        Log.Message("CorrectedIngredients Entered for : " + __result.def.defName);
                     currentPawn = __result;
 
                     //Log.Message("Check is cannibal for: " + __result.def.defName);
@@ -427,8 +429,6 @@ namespace AssortedTweaks
                     {
                         isCannible = true;
                     }
-                    if (DebugSettings.godMode && AssortedTweaksMod.instance.Settings.ShowDebugMessages)
-                        Log.Message("CorrectedIngredients Entered for : " + __result.def.defName);
                     //if (pawn.Faction != null && !factionMainMeatSource.ContainsKey(pawn.Faction))
                     //    factionMainMeatSource.Add(pawn.Faction, null);
                     //if (pawn.RaceProps.Humanlike && pawn.Faction != null && pawn.Faction != factionGroup)
@@ -469,6 +469,8 @@ namespace AssortedTweaks
                 }
                 else if (__result.def.category == ThingCategory.Item && __result.def.IsIngestible && __result.TryGetComp<CompIngredients>() != null)
                 {
+                    if (DebugSettings.godMode && AssortedTweaksMod.instance.Settings.ShowDebugMessages)
+                        Log.Message("CorrectedIngredients Entered for : " + __result.def.defName);
                     comp = __result.TryGetComp<CompIngredients>();
                     if (comp != null)
                     {
@@ -486,17 +488,19 @@ namespace AssortedTweaks
                             (__result.def.defName != null ? __result.def.defName : "Null") + ". Location: " + 
                             (__result.PositionHeld != null ? __result.PositionHeld.ToString() : "Null") +
                             (__result.def.modContentPack != null ? __result.def.modContentPack.Name : "Null"));
-                    foreach (var item in __result.TryGetComp<CompIngredients>().ingredients)
-                    {
-                        if (item != null)
+                    CompIngredients ingredientsComp = __result.TryGetComp<CompIngredients>();
+                    if (ingredientsComp != null)
+                        foreach (var item in ingredientsComp.ingredients)
                         {
-                            Log.Message("Ingredient: " + item.defName + ". From Mod: " + (__result.def.modContentPack != null ? __result.def.modContentPack.Name : "Null"));
+                            if (item != null)
+                            {
+                                Log.Message("Ingredient: " + item.defName + ". From Mod: " + (__result.def.modContentPack != null ? __result.def.modContentPack.Name : "Null"));
+                            }
+                            else
+                            {
+                                Log.Message("Ingredient: Null Ingredient");
+                            }
                         }
-                        else
-                        {
-                            Log.Message("Ingredient: Null Ingredient");
-                        }
-                    }
                 }
                 return;
             }
